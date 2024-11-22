@@ -3,5 +3,4 @@
   import_playbook: '../../examples/single-dc-l3ls/build.yml'
 
 - name: cv_deploy and validate single-dc-l3ls
-  include_playbook: deploy_validate.yml
-  when: lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') is defined
+  import_playbook: deploy_validate.yml
