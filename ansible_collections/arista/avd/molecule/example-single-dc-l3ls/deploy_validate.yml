@@ -90,6 +90,13 @@
           ansible.builtin.assert:
             that:
               - output_devices == cv_devices
+        
+        - name: "{{ test_id | upper }} Run eos_validate_state"
+          delegate_to: localhost
+          ansible.builtin.import_role:
+            name: arista.avd.eos_validate_state
+          vars:
+            save_catalog: true
 
         - name: "{{ test_id | upper }} Cleanup"
           run_once: true
