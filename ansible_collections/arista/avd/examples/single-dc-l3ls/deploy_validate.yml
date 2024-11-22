@@ -24,6 +24,10 @@
               - "### STARTING MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
               - "######################################################################"
 
+        - name: "{{ test_id | upper }} Update ansible_host params based on CI environment"
+          set_fact:
+            ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_' + (inventory_hostname | upper | replace('-', '_'))) }}"
+        
         - name: "{{ test_id | upper }} Generate random string"
           run_once: true
           ansible.builtin.set_fact:
