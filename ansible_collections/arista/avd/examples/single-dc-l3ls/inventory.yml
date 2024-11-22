@@ -20,7 +20,8 @@ all:
             DC1_SPINES:
               hosts:
                 dc1-spine1:
-                  ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_SPINE1') or '172.16.1.11' }}"
+                  # ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_SPINE1') or '172.16.1.11' }}"
+                  ansible_host: "10.90.231.70"
                 dc1-spine2:
                   ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_SPINE2') or '172.16.1.12' }}"
             DC1_L3_LEAVES:
