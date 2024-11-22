@@ -4,4 +4,3 @@
 
 - name: cv_deploy and validate single-dc-l3ls
   import_playbook: deploy_validate.yml
-  
