@@ -1,0 +1,123 @@
+---
+- name: "{{ test_id | upper }} Deploy example-single-dc-l3ls to CI CVaaS"
+  hosts: FABRIC
+  connection: local
+  gather_facts: false
+  vars:
+    cv_server: www.cv-staging.corp.arista.io
+    cv_token: "{{ lookup('env', 'CVAAS_AAWG_CI') }}"
+    cv_verify_certs: true
+    cv_skip_missing_devices: true
+    eos_config_dir: "{{ inventory_dir }}/intended/configs"
+    structured_dir: "{{ inventory_dir }}/intended/structured_configs"
+    test_id: "single-dc-l3ls"
+    cv_common_pattern: "avd-ci-{{ test_id }}"
+
+  tasks:
+    - name: Block of conditional tasks
+      block:
+        - name: "{{ test_id | upper }} Banner"
+          run_once: true
+          ansible.builtin.debug:
+            msg:
+              - "######################################################################"
+              - "### STARTING MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
+              - "######################################################################"
+
+        - name: "{{ test_id | upper }} Generate random string"
+          run_once: true
+          ansible.builtin.set_fact:
+            r: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=4') }}"
+
+        - name: "{{ test_id | upper }} Provision CVP with AVD configuration"
+          run_once: true
+          delegate_to: localhost
+          ansible.builtin.import_role:
+            name: arista.avd.cv_deploy
+          vars:
+            cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+            cv_workspace_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+            cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+            cv_change_control_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+            cv_submit_workspace: true
+            cv_submit_workspace_force: true
+            cv_run_change_control: true
+            cv_register_detailed_results: true
+
+        - name: "{{ test_id | upper }} Display CVP result"
+          run_once: true
+          ansible.builtin.debug:
+            msg: '{{ cv_deploy_results }}'
+
+        - name: "{{ test_id | upper }} Check CVP returns"
+          run_once: true
+          ansible.builtin.assert:
+            that:
+              # workspace
+              - cv_deploy_results.workspace.name == cv_workspace_name
+              - cv_deploy_results.workspace.state == "submitted"
+              - cv_deploy_results.workspace.description == cv_workspace_description
+              - cv_deploy_results.workspace.state
+              # errors and warnings
+              - cv_deploy_results.errors == []
+              - cv_deploy_results.warnings == []
+              # Change control
+              - cv_deploy_results.change_control.name == cv_change_control_name
+              - cv_deploy_results.change_control.requested_state == "completed"
+              - cv_deploy_results.change_control.description == cv_change_control_description
+          vars:
+            cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+            cv_workspace_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+            cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+            cv_change_control_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+
+        - name: "{{ test_id | upper }} Convert unstructed data into yaml"
+          run_once: true
+          ansible.builtin.set_fact:
+            deivces_structure: '{{ cv_deploy_results.deployed_configs | from_yaml }}'
+            output_devices: []
+
+        - name: "{{ test_id | upper }} Extract devices from output"
+          run_once: true
+          ansible.builtin.set_fact:
+            output_devices: "{{ output_devices + [item.device.hostname] }}"
+          loop: "{{ deivces_structure }}"
+          loop_control:
+            label: "{{ item.configlet_name }}"
+
+        - name: "{{ test_id | upper }} Check output devices == intended devices"
+          run_once: true
+          ansible.builtin.assert:
+            that:
+              - output_devices == cv_devices
+        
+        - name: "{{ test_id | upper }} Run eos_validate_state"
+          delegate_to: localhost
+          ansible.builtin.import_role:
+            name: arista.avd.eos_validate_state
+          vars:
+            save_catalog: true
+
+        - name: "{{ test_id | upper }} Cleanup"
+          run_once: true
+          delegate_to: localhost
+          ansible.builtin.import_role:
+            name: arista.avd.cv_deploy
+          vars:
+            eos_config_dir: "{{ playbook_dir }}/intended/configs/base_configs"
+            structured_dir: "{{ playbook_dir }}/intended/structured_configs/base_configs"
+            cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
+            cv_workspace_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
+            cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
+            cv_change_control_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
+            cv_submit_workspace: true
+            cv_submit_workspace_force: true
+            cv_run_change_control: true
+            cv_register_detailed_results: true
+        
+        - name: "{{ test_id | upper }} Display CVP Cleanup result"
+          run_once: true
+          ansible.builtin.debug:
+            msg: '{{ cv_deploy_results }}'
+
+      when: lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') is defined
