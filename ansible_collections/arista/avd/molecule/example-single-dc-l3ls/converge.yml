@@ -1,6 +1,10 @@
 ---
-- name: Offline build
-  import_playbook: '../../examples/single-dc-l3ls/build.yml'
-
-- name: cv_deploy and validate single-dc-l3ls
-  import_playbook: deploy_validate.yml
+- name: Build, deploy and validate
+  block:
+    - name: Offline build
+      import_playbook: '../../examples/single-dc-l3ls/build.yml'
+    - name: cv_deploy and validate single-dc-l3ls
+      import_playbook: deploy_validate.yml
+  always:
+    - name: Cleanup single-dc-l3ls CI environment
+      import_playbook: cleanup.yml

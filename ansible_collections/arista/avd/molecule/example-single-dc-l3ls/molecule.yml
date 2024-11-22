@@ -5,7 +5,6 @@ scenario:
   test_sequence:
     - converge
     - idempotence
-    - cleanup
   cleanup_sequence:
     - destroy
 dependency:

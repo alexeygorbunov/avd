@@ -15,4 +15,3 @@
         - intended
         - config_backup
         - reports
-      when: lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') is not defined
