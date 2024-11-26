@@ -75,7 +75,7 @@
 
         - name: Read anta_results and set them as facts
           ansible.builtin.set_fact:
-            anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json | default[] }}"
+            anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json | default([]) }}"
 
         - name: DEBUG ANTA_RESULTS
           run_once: true
