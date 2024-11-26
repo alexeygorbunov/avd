@@ -96,6 +96,14 @@
             name: arista.avd.eos_validate_state
           vars:
             save_catalog: true
+
+        - name: "{{ test_id | upper }} Assert results of the eos_validate_state"
+          ansible.builtin.assert:
+            that:
+              - "'Port-Channel5 is down' in item or 'is not synchronized with the configured NTP server' in item"
+          with_items: "{{ anta_results | selectattr('result', 'equalto', 'failure') | map(attribute='messages') | flatten | default([]) }}"
+          loop_control:
+            label: "{{ item }}"
         
         - name: "{{ test_id | upper }} Cleanup banner"
           run_once: true
