@@ -72,14 +72,14 @@ default_interfaces:
 
 # CloudVision Portal definitions
 cvp_instance_ips:
-  -  "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_SPINE1') | ternary('apiserver.cv-staging.corp.arista.io', '192.168.1.12') }}"
+  -  192.168.1.12
 terminattr_smashexcludes: "ale,flexCounter,hardware,kni,pulse,strata"
 terminattr_ingestexclude: "/Sysdb/cell/1/agent,/Sysdb/cell/2/agent"
 terminattr_disable_aaa: true
 
 # DNS Server
 name_servers:
-  - "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_SPINE1') | ternary('10.90.231.26', '192.168.1.1') }}"
+  - 192.168.1.1
 
 # NTP Servers IP or DNS name, first NTP server will be preferred, and sourced from Management VRF
 ntp_settings:

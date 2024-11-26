@@ -1,11 +1,17 @@
-{% set ns = namespace() %}
-{% set ns.l2leaf_updated = {} %}
-{% set ns.node_groups = [] %}
-{% for node_group in l2leaf.node_groups | arista.avd.default([]) %}
-{%   set ns.nodes = [] %}
-{%   for node in node_group.nodes | arista.avd.default([]) %}
-{%     do ns.nodes.append({ 'name': node.name, 'mgmt_ip': lookup('env', 'SINGLE_DC_L3LS_' ~ (node.name | replace("-", "_") | upper)) ~ '/' ~ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_MASK') }) %}
-{%   endfor %}
-{%   do ns.node_groups.append({ 'group': node_group.group, 'nodes': ns.nodes }) %}
+{% for node in l2leaf.nodes | default([]) %}
+{%     if lookup('env', 'SINGLE_DC_L3LS_' ~ (node.name | replace("-", "_") | upper)) | length > 0 and lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_MASK') | length > 0 %}
+{%       if 'mgmt_ip' in node and 'name' in node %}
+{%         do node.update({ 'mgmt_ip': lookup('env', 'SINGLE_DC_L3LS_' ~ (node.name | replace("-", "_") | upper)) ~ '/' ~ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_MASK') }) %}
+{%       endif %}
+{%     endif %}
 {% endfor %}
-{{ l2leaf | ansible.builtin.combine(ns.l2leaf_updated, recursive=true) }}
+{% for node_group in l2leaf.node_groups | default([]) %}
+{%   for node in node_group.nodes | default([]) %}
+{%       if lookup('env', 'SINGLE_DC_L3LS_' ~ (node.name | replace("-", "_") | upper)) | length > 0 and lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_MASK') | length > 0 %}
+{%         if 'mgmt_ip' in node and 'name' in node %}
+{%           do node.update({ 'mgmt_ip': lookup('env', 'SINGLE_DC_L3LS_' ~ (node.name | replace("-", "_") | upper)) ~ '/' ~ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_MASK') }) %}
+{%         endif %}
+{%       endif %}
+{%   endfor %}
+{% endfor %}
+{{ l2leaf }}
