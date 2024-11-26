@@ -16,6 +16,22 @@
   tasks:
     - name: Block of conditional tasks
       block:
+        - name: "{{ test_id | upper }} Update ansible_host and other params for CI environment"
+          set_fact:
+            ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_' + (inventory_hostname | upper | replace('-', '_'))) or hostvars[inventory_hostname]['ansible_host'] }}"
+            mgmt_gateway: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_GW') or hostvars[inventory_hostname]['mgmt_gateway'] }}"
+            cvp_instance_ips: "{{ lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') | ternary(['apiserver.cv-staging.corp.arista.io'], hostvars[inventory_hostname]['cvp_instance_ips']) }}"
+            name_servers: "{{ [ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_DNS') ] or hostvars[inventory_hostname]['name_servers'] }}"
+            spine: "{{ lookup('template', '{{ playbook_dir }}/templates/spine_mgmt_ip.j2') | from_yaml }}"
+            l3leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l3leaf_mgmt_ip.j2') | from_yaml }}"
+            l2leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l2leaf_mgmt_ip.j2') | from_yaml }}"
+
+        - name: "{{ test_id | upper }} Render base configuration for single-dc-l3ls hosts"
+          template:
+            src: "{{ playbook_dir }}/templates/base_config.j2"
+            dest: "{{ playbook_dir }}/intended/configs/base_configs/{{ inventory_hostname }}.cfg"
+            mode: 0664
+
         - name: "{{ test_id | upper }} Generate random string"
           run_once: true
           ansible.builtin.set_fact:
