@@ -24,18 +24,6 @@
               - "### MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
               - "######################################################################"
 
-        # - name: DEBUG 1
-        #   run_once: true
-        #   debug:
-        #     msg:
-        #       - "mgmt_gateway: {{ mgmt_gateway }}"
-        #       - "ansible_host: {{ ansible_host }}"
-        #       - "cvp_instance_ips: {{ cvp_instance_ips }}"
-        #       - "name_servers: {{ name_servers }}"
-        #       - "spine: {{ spine }}"
-        #       - "l3leaf: {{ l3leaf }}"
-        #       - "l2leaf: {{ l2leaf }}"
-
         - name: "{{ test_id | upper }} Update ansible_host and other params for CI environment"
           ansible.builtin.set_fact:
             ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_' + (inventory_hostname | upper | replace('-', '_'))) or hostvars[inventory_hostname]['ansible_host'] }}"
@@ -45,18 +33,6 @@
             spine: "{{ lookup('template', '{{ playbook_dir }}/templates/spine_mgmt_ip.j2') | from_yaml }}"
             l3leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l3leaf_mgmt_ip.j2') | from_yaml }}"
             l2leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l2leaf_mgmt_ip.j2') | from_yaml }}"
-        
-        # - name: DEBUG 2
-        #   run_once: true
-        #   debug:
-        #     msg:
-        #       - "mgmt_gateway: {{ mgmt_gateway }}"
-        #       - "ansible_host: {{ ansible_host }}"
-        #       - "cvp_instance_ips: {{ cvp_instance_ips }}"
-        #       - "name_servers: {{ name_servers }}"
-        #       - "spine: {{ spine }}"
-        #       - "l3leaf: {{ l3leaf }}"
-        #       - "l2leaf: {{ l2leaf }}"
 
         - name: Generate AVD Structured Configurations and Fabric Documentation
           ansible.builtin.import_role:
@@ -99,7 +75,7 @@
 
         - name: Read anta_results and set them as facts
           ansible.builtin.set_fact:
-            anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json }}"
+            anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json | default[] }}"
 
         - name: DEBUG ANTA_RESULTS
           run_once: true
@@ -107,7 +83,12 @@
             msg:
               - "anta_results: {{ anta_results }}"
 
-        - name: "{{ test_id | upper }} Assert results of the eos_validate_state"
+        - name: "{{ test_id | upper }} Assert number of performed tests in eos_validate_state"
+          ansible.builtin.assert:
+            that:
+              - anta_results | length > 0
+
+        - name: "{{ test_id | upper }} Assert false-positive failures in eos_validate_state"
           ansible.builtin.assert:
             that:
               - "'Port-Channel5 is down' in item or 'is not synchronized with the configured NTP server' in item"
