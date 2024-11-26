@@ -37,7 +37,7 @@
         #       - "l2leaf: {{ l2leaf }}"
 
         - name: "{{ test_id | upper }} Update ansible_host and other params for CI environment"
-          set_fact:
+          ansible.builtin.set_fact:
             ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_' + (inventory_hostname | upper | replace('-', '_'))) or hostvars[inventory_hostname]['ansible_host'] }}"
             mgmt_gateway: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_GW') or hostvars[inventory_hostname]['mgmt_gateway'] }}"
             cvp_instance_ips: "{{ lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') | ternary(['apiserver.cv-staging.corp.arista.io'], hostvars[inventory_hostname]['cvp_instance_ips']) }}"
@@ -96,6 +96,10 @@
             name: arista.avd.eos_validate_state
           vars:
             save_catalog: true
+
+        - name: Read anta_results and set them as facts
+          ansible.builtin.set_fact:
+            anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json }}"
 
         - name: DEBUG ANTA_RESULTS
           run_once: true
