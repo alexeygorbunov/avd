@@ -26,6 +26,17 @@
             l3leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l3leaf_mgmt_ip.j2') | from_yaml }}"
             l2leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l2leaf_mgmt_ip.j2') | from_yaml }}"
 
+        - name: Create required output directories if not present
+          run_once: true
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: directory
+            recurse: yes
+            mode: "0o775"
+          loop:
+            - "{{ playbook_dir }}/intended/configs/base_configs"
+          delegate_to: localhost
+        
         - name: "{{ test_id | upper }} Render base configuration for single-dc-l3ls hosts"
           template:
             src: "{{ playbook_dir }}/templates/base_config.j2"
