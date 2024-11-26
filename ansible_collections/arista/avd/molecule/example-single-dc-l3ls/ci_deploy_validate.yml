@@ -97,6 +97,12 @@
           vars:
             save_catalog: true
 
+        - name: DEBUG ANTA_RESULTS
+          run_once: true
+          debug:
+            msg:
+              - "anta_results: {{ anta_results }}"
+
         - name: "{{ test_id | upper }} Assert results of the eos_validate_state"
           ansible.builtin.assert:
             that:
