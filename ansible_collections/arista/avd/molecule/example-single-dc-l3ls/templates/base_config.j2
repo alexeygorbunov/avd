@@ -13,7 +13,7 @@ transceiver qsfp default-mode 4x10G
 service routing protocols model multi-agent
 !
 hostname {{ inventory_hostname }}
-ip name-server vrf MGMT {{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_DNS' }}
+ip name-server vrf MGMT {{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_DNS') }}
 !
 vrf instance MGMT
 !
@@ -33,7 +33,7 @@ interface Management1
 no ip routing
 no ip routing vrf MGMT
 !
-ip route vrf MGMT 0.0.0.0/0 {{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_GW' }}
+ip route vrf MGMT 0.0.0.0/0 {{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_GW') }}
 !
 ntp local-interface vrf MGMT Management1
 ntp server vrf MGMT 0.pool.ntp.org prefer
