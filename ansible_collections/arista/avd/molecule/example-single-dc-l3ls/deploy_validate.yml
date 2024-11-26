@@ -24,69 +24,95 @@
               - "### MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
               - "######################################################################"
 
-        - name: "{{ test_id | upper }} Update ansible_host params based on CI environment"
+        - name: DEBUG 1
+          run_once: true
+          debug:
+            msg:
+              - "spine: {{ spine }}"
+              - "l3leaf: {{ l3leaf }}"
+              - "l2leaf: {{ l2leaf }}"
+
+        - name: "{{ test_id | upper }} Update ansible_host and other params for CI environment"
           set_fact:
             ansible_host: "{{ lookup('env', 'SINGLE_DC_L3LS_' + (inventory_hostname | upper | replace('-', '_'))) }}"
+            mgmt_gateway: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_MGMT_GW') }}"
+            spine: "{{ lookup('template', '{{ playbook_dir }}/templates/spine_mgmt_ip.j2') | from_yaml }}"
+            l3leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l3leaf_mgmt_ip.j2') | from_yaml }}"
+            l2leaf: "{{ lookup('template', '{{ playbook_dir }}/templates/l2leaf_mgmt_ip.j2') | from_yaml }}"
         
-        - name: "{{ test_id | upper }} Generate random string"
+        - name: DEBUG 2
           run_once: true
-          ansible.builtin.set_fact:
-            r: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=4') }}"
-
-        - name: "{{ test_id | upper }} Provision CVP with AVD configuration"
-          run_once: true
-          delegate_to: localhost
-          ansible.builtin.import_role:
-            name: arista.avd.cv_deploy
-          vars:
-            cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-converge"
-            cv_workspace_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
-            cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-converge"
-            cv_change_control_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
-            cv_submit_workspace: true
-            cv_submit_workspace_force: true
-            cv_run_change_control: true
-            cv_register_detailed_results: true
-
-        - name: "{{ test_id | upper }} Display CVP result"
-          run_once: true
-          ansible.builtin.debug:
-            msg: '{{ cv_deploy_results }}'
-        
-        - name: "{{ test_id | upper }} Run eos_validate_state"
-          ansible.builtin.import_role:
-            name: arista.avd.eos_validate_state
-          vars:
-            save_catalog: true
-        
-        - name: "{{ test_id | upper }} Cleanup banner"
-          run_once: true
-          ansible.builtin.debug:
+          debug:
             msg:
-              - "######################################################################"
-              - "### CLEANUP FOR MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
-              - "######################################################################"
+              - "spine: {{ spine }}"
+              - "l3leaf: {{ l3leaf }}"
+              - "l2leaf: {{ l2leaf }}"
 
-        - name: "{{ test_id | upper }} Cleanup"
-          run_once: true
-          delegate_to: localhost
-          ansible.builtin.import_role:
-            name: arista.avd.cv_deploy
-          vars:
-            eos_config_dir: "{{ playbook_dir }}/intended/configs/base_configs"
-            structured_dir: "{{ playbook_dir }}/intended/structured_configs/base_configs"
-            cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
-            cv_workspace_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
-            cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
-            cv_change_control_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
-            cv_submit_workspace: true
-            cv_submit_workspace_force: true
-            cv_run_change_control: true
-            cv_register_detailed_results: true
+      #   - name: "{{ test_id | upper }} Generate random string"
+      #     run_once: true
+      #     ansible.builtin.set_fact:
+      #       r: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=4') }}"
+
+      #   - name: "{{ test_id | upper }} Provision CVP with AVD configuration"
+      #     run_once: true
+      #     delegate_to: localhost
+      #     ansible.builtin.import_role:
+      #       name: arista.avd.cv_deploy
+      #     vars:
+      #       cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+      #       cv_workspace_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+      #       cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-converge"
+      #       cv_change_control_description: "{{ (cv_common_pattern + '-' + r + '-converge') | upper }}"
+      #       cv_submit_workspace: true
+      #       cv_submit_workspace_force: true
+      #       cv_run_change_control: true
+      #       cv_register_detailed_results: true
+
+      #   - name: "{{ test_id | upper }} Display CVP result"
+      #     run_once: true
+      #     ansible.builtin.debug:
+      #       msg: '{{ cv_deploy_results }}'
         
-        - name: "{{ test_id | upper }} Display CVP Cleanup result"
-          run_once: true
-          ansible.builtin.debug:
-            msg: '{{ cv_deploy_results }}'
+      #   - name: "{{ test_id | upper }} Run eos_validate_state"
+      #     ansible.builtin.import_role:
+      #       name: arista.avd.eos_validate_state
+      #     vars:
+      #       save_catalog: true
+        
+      #   - name: "{{ test_id | upper }} Cleanup banner"
+      #     run_once: true
+      #     ansible.builtin.debug:
+      #       msg:
+      #         - "######################################################################"
+      #         - "### CLEANUP FOR MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
+      #         - "######################################################################"
 
-      when: lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') is defined
+      #   - name: "{{ test_id | upper }} Render base configuration for single-dc-l3ls hosts"
+      #     template:
+      #       src: "{{ playbook_dir }}/templates/base_config.j2"
+      #       dest: "{{ playbook_dir }}/intended/configs/base_configs/{{ inventory_hostname }}.cfg"
+      #       mode: 0664
+        
+      #   - name: "{{ test_id | upper }} Cleanup"
+      #     run_once: true
+      #     delegate_to: localhost
+      #     ansible.builtin.import_role:
+      #       name: arista.avd.cv_deploy
+      #     vars:
+      #       eos_config_dir: "{{ playbook_dir }}/intended/configs/base_configs"
+      #       structured_dir: "{{ playbook_dir }}/intended/structured_configs/base_configs"
+      #       cv_workspace_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
+      #       cv_workspace_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
+      #       cv_change_control_name: "{{ cv_common_pattern }}-{{ r }}-cleanup"
+      #       cv_change_control_description: "{{ cv_common_pattern + '-' + r + '-cleanup' | upper }}"
+      #       cv_submit_workspace: true
+      #       cv_submit_workspace_force: true
+      #       cv_run_change_control: true
+      #       cv_register_detailed_results: true
+        
+      #   - name: "{{ test_id | upper }} Display CVP Cleanup result"
+      #     run_once: true
+      #     ansible.builtin.debug:
+      #       msg: '{{ cv_deploy_results }}'
+
+      # when: lookup('env', 'SINGLE_DC_L3LS_CI_ENVIRONMENT') is defined
