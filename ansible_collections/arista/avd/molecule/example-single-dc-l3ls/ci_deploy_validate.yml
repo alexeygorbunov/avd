@@ -77,16 +77,11 @@
           ansible.builtin.set_fact:
             anta_results: "{{ lookup('ansible.builtin.file', '{{ inventory_dir }}/reports/test_results/{{ inventory_hostname }}-results.json') | from_json | default([]) }}"
 
-        - name: DEBUG ANTA_RESULTS
-          run_once: true
-          debug:
-            msg:
-              - "anta_results: {{ anta_results }}"
-
         - name: "{{ test_id | upper }} Assert number of performed tests in eos_validate_state"
           ansible.builtin.assert:
             that:
               - anta_results | length > 0
+            success_msg: "Assertion passed: {{ anta_results | length }} non-failed tests discovered."
 
         - name: "{{ test_id | upper }} Assert false-positive failures in eos_validate_state"
           ansible.builtin.assert:
