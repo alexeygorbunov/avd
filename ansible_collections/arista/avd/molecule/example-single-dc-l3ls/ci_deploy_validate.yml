@@ -5,7 +5,7 @@
   gather_facts: false
   vars:
     cv_server: www.cv-staging.corp.arista.io
-    cv_token: "{{ lookup('env', 'CVAAS_AAWG_CI') }}"
+    cv_token: "{{ lookup('env', 'CVAAS_ACCESS_TOKEN') }}"
     cv_verify_certs: true
     cv_skip_missing_devices: true
     eos_config_dir: "{{ inventory_dir }}/intended/configs"
@@ -21,7 +21,7 @@
           ansible.builtin.debug:
             msg:
               - "######################################################################"
-              - "### MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
+              - "### TEST {{ '{:<38}'.format(test_id[:38]) | upper }}"
               - "######################################################################"
 
         - name: "{{ test_id | upper }} Update ansible_host and other params for CI environment"
@@ -41,6 +41,25 @@
         - name: Generate Device Configurations and Documentation
           ansible.builtin.import_role:
             name: arista.avd.eos_cli_config_gen
+        
+        - name: "Engage role make-eve-ng-ready to prepare CI environment"
+          ansible.builtin.import_role:
+            name: make-eve-ng-ready
+          vars:
+            cv_access_token: "{{ lookup('env', 'CVAAS_ACCESS_TOKEN') }}"
+            cv_fqdn: "cv-staging.corp.arista.io"
+            eve_ng_host: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EVE_HOST') }}"
+            eve_ng_user: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EVE_USERNAME') }}"
+            eve_ng_pass: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EVE_PASSWORD') }}"
+            eve_ng_lab: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EVE_LAB') }}"
+            ansible_connection: ansible.netcommon.httpapi
+            ansible_network_os: arista.eos.eos
+            ansible_user: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EOS_USERNAME') }}"
+            ansible_password: "{{ lookup('env', 'SINGLE_DC_L3LS_DC1_EOS_PASSWORD') }}"
+            ansible_become: true
+            ansible_become_method: enable
+            ansible_httpapi_use_ssl: true
+            ansible_httpapi_validate_certs: false
 
         - name: "{{ test_id | upper }} Generate random string"
           run_once: true
@@ -96,7 +115,7 @@
           ansible.builtin.debug:
             msg:
               - "######################################################################"
-              - "### CLEANUP FOR MOLECULE TEST {{ '{:<38}'.format(test_id[:38]) | upper }} ####"
+              - "### CLEANUP FOR TEST {{ '{:<38}'.format(test_id[:38]) | upper }}"
               - "######################################################################"
 
         - name: Create required output directories if not present
