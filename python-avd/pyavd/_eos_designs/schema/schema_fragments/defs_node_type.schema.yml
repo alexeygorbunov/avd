@@ -1491,6 +1491,37 @@ $defs:
               new_key: inband_mgmt_vlan
               remove_in_version: 5.0.0
             type: int
+          digital_twin:
+            documentation_options:
+              table: node-type-digital-twin-configuration
+            type: dict
+            keys:
+              enabled:
+                type: bool
+                description: |-
+                  Include node(s) in the generated Digital Twin metadata.
+                  Digital Twin generation must be globally enabled for this key to take effect.
+                default: false
+              platform:
+                type: str
+                description: |-
+                  Desired virtual platform.
+                  Available option for ACT:
+                    - veos
+                    - cloudeos
+                valid_values:
+                  - veos
+                  - cloudeos
+              os_version:
+                type: str
+                description: |-
+                  Desired version of the Arista EOS.
+              mgmt_ip:
+                type: str
+                description: |-
+                  Management interface IPv4 address of the virtual node.
+                  Use this key to override the dynamically generated MGMT IP.
+                format: cidr
       node_groups:
         type: list
         description: Define variables related to all nodes part of this group.

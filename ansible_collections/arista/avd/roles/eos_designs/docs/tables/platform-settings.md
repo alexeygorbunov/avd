@@ -373,6 +373,7 @@
           - VEOS-LAB
           - vEOS
           - vEOS-lab
+          - veos
           reload_delay:
             mlag: 300
             non_mlag: 330
@@ -398,6 +399,7 @@
           p2p_uplinks_mtu: 9194
           platforms:
           - CloudEOS
+          - cloudeos
         - feature_support:
             bgp_update_wait_for_convergence: true
             bgp_update_wait_install: false

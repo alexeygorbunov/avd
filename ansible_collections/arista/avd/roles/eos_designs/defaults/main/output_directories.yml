@@ -1,7 +1,7 @@
 # Roles Defaults - ouptput directories
 
 # Root directory where to build output structure
-root_dir: '{{ inventory_dir }}'
+root_dir: '{{ inventory_dir ~ "/digital_twin/" if digital_twin_mode | arista.avd.default(false) else inventory_dir}}'
 
 # Documentation folders
 # Main documentation folder

@@ -1170,6 +1170,88 @@ keys:
         - mpls
         - l2ls
         default: l3ls-evpn
+  digital_twin:
+    documentation_options:
+      table: digital-twin-configuration
+    type: dict
+    keys:
+      environment:
+        type: str
+        description: "Targeted Digital Twin environment. Available options:\n  - act"
+        valid_values:
+        - act
+        default: act
+      platform:
+        type: dict
+        keys:
+          fabric:
+            type: str
+            description: "Desired virtual platform for Fabric nodes.\nAvailable option
+              for ACT:\n  - veos\n  - cloudeos"
+            valid_values:
+            - veos
+            - cloudeos
+            default: veos
+          endpoints:
+            type: str
+            description: "Desired virtual platform for Endpoints.\nAvailable option
+              for act:\n  - veos\n  - cloudeos\n  - generic (Ubuntu Linux)"
+            valid_values:
+            - veos
+            - cloudeos
+            - generic
+            default: veos
+      os_version:
+        type: dict
+        keys:
+          fabric:
+            type: str
+            description: Desired OS version for Fabric nodes.
+          endpoints:
+            type: str
+            description: Desired OS version for Endpoints.
+      mgmt_ipv4_pool:
+        type: dict
+        keys:
+          fabric:
+            type: str
+            description: 'IPv4 address pool to automatically generate MGMT IPv4 addreesses
+              for Fabric nodes.
+
+              Comma separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).'
+            format: ipv4_pool
+          endpoints:
+            type: str
+            description: 'IPv4 address pool to automatically generate MGMT IPv4 addreesses
+              for Endpoints.
+
+              Comma separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).'
+            format: ipv4_pool
+      username:
+        type: dict
+        keys:
+          fabric:
+            type: str
+            description: Username for Fabric nodes.
+          endpoints:
+            type: str
+            description: Username for Endpoints.
+      password:
+        type: dict
+        keys:
+          fabric:
+            type: str
+            description: Password for Fabric nodes.
+          endpoints:
+            type: str
+            description: Password for Endpoints.
+  digital_twin_mode:
+    documentation_options:
+      table: digital-twin-configuration
+    type: bool
+    description: Globally enable generation of the Digital Twin metadata (topology,
+      configuration, etc.).
+    default: false
   enable_trunk_groups:
     documentation_options:
       table: fabric-settings
@@ -3573,6 +3655,7 @@ keys:
       - VEOS-LAB
       - vEOS
       - vEOS-lab
+      - veos
       feature_support:
         bgp_update_wait_for_convergence: false
         bgp_update_wait_install: false
@@ -3599,6 +3682,7 @@ keys:
         non_mlag: 330
     - platforms:
       - CloudEOS
+      - cloudeos
       feature_support:
         bgp_update_wait_install: false
         interface_storm_control: false
@@ -9912,6 +9996,34 @@ $defs:
               new_key: inband_mgmt_vlan
               remove_in_version: 5.0.0
             type: int
+          digital_twin:
+            documentation_options:
+              table: node-type-digital-twin-configuration
+            type: dict
+            keys:
+              enabled:
+                type: bool
+                description: 'Include node(s) in the generated Digital Twin metadata.
+
+                  Digital Twin generation must be globally enabled for this key to
+                  take effect.'
+                default: false
+              platform:
+                type: str
+                description: "Desired virtual platform.\nAvailable option for ACT:\n
+                  \ - veos\n  - cloudeos"
+                valid_values:
+                - veos
+                - cloudeos
+              os_version:
+                type: str
+                description: Desired version of the Arista EOS.
+              mgmt_ip:
+                type: str
+                description: 'Management interface IPv4 address of the virtual node.
+
+                  Use this key to override the dynamically generated MGMT IP.'
+                format: cidr
       node_groups:
         type: list
         description: Define variables related to all nodes part of this group.

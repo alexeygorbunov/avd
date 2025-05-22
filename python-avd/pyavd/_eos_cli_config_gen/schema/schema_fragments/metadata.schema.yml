@@ -355,3 +355,19 @@ keys:
                           type: str
                         category:
                           type: str
+      digital_twin:
+        type: dict
+        keys:
+          environment:
+            type: str
+          node_type:
+            type: str
+          ip_addr:
+            type: str
+            description: IPv4_address/Mask.
+          version:
+            type: str
+          username:
+            type: str
+          password:
+            type: str

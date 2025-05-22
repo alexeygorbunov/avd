@@ -75,6 +75,10 @@ class EosDesignsRootModel(AvdModel):
                 # Invalid prefix format.
                 continue
 
+            # In Digital Twin generation mode - skip all custom structure configuration prefixes that start with "hw_"
+            if data.get("digital_twin_mode", False) and prefix.startswith("hw_"):
+                continue
+
             if not (matching_keys := [key for key in data if str(key).startswith(prefix) and key not in SKIP_KEYS]):
                 continue
 

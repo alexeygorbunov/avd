@@ -8,7 +8,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import yaml
 from ansible.errors import AnsibleActionFail
+from ansible.parsing.yaml.dumper import AnsibleDumper
 from ansible.plugins.action import ActionBase, display
 from yaml import load
 
@@ -44,6 +46,8 @@ ARGUMENT_SPEC = {
     "p2p_links_csv_file": {"type": "str", "required": True},
     "p2p_links_csv": {"type": "bool", "default": False},
     "toc": {"type": "bool", "default": True},
+    "digital_twin_file": {"type": "str", "required": True},
+    "digital_twin": {"type": "bool", "default": False},
 }
 
 
@@ -91,6 +95,7 @@ class ActionModule(ActionBase):
             topology_csv=validated_args["topology_csv"],
             p2p_links_csv=validated_args["p2p_links_csv"],
             toc=validated_args["toc"],
+            digital_twin=validated_args["digital_twin"],
         )
         if output.fabric_documentation:
             result["changed"] = write_file(
@@ -110,6 +115,14 @@ class ActionModule(ActionBase):
             changed = write_file(
                 content=output.p2p_links_csv,
                 filename=validated_args["p2p_links_csv_file"],
+                file_mode=validated_args["mode"],
+            )
+            result["changed"] = result.get("changed") or changed
+
+        if output.digital_twin:
+            changed = write_file(
+                content=yaml.dump(output.digital_twin, Dumper=AnsibleDumper, indent=2, sort_keys=False, width=130),
+                filename=validated_args["digital_twin_file"],
                 file_mode=validated_args["mode"],
             )
             result["changed"] = result.get("changed") or changed
