@@ -89,7 +89,7 @@ management_interfaces:
   type: oob
 metadata:
   platform: veos
-  fabric_name: FABRIC
+  fabric_name: DIGITAL_TWIN
   digital_twin:
     environment: act
     node_type: veos

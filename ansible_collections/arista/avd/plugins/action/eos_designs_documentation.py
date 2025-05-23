@@ -46,7 +46,7 @@ ARGUMENT_SPEC = {
     "p2p_links_csv_file": {"type": "str", "required": True},
     "p2p_links_csv": {"type": "bool", "default": False},
     "toc": {"type": "bool", "default": True},
-    "digital_twin_file": {"type": "str", "default": "digital-twin-topology.yml"},
+    "digital_twin_file": {"type": "str", "default": "TOPOLOGY.yml"},
     "digital_twin": {"type": "bool", "default": False},
 }
 

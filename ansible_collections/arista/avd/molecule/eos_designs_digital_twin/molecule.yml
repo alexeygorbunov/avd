@@ -27,8 +27,8 @@ provisioner:
     - --inventory
     - ${MOLECULE_SCENARIO_DIRECTORY}/inventory/hosts.yml
     - -e
-    - '{"digital_twin_mode": true}'
-    # - --limit
-    # - LIMITED_DIGITAL_TWIN_SCOPE
+    - '{"digital_twin_mode": true, "fabric_name": "DIGITAL_TWIN"}'
+    - --limit
+    - DIGITAL_TWIN
 verifier:
   name: ansible

@@ -4,6 +4,24 @@ config_end: true
 enable_password:
   disabled: true
 ethernet_interfaces:
+- name: Ethernet1
+  description: L2_dc1-leaf2a_Ethernet8
+  shutdown: false
+  channel_group:
+    id: 1
+    mode: active
+  peer: dc1-leaf2a
+  peer_interface: Ethernet8
+  peer_type: l3leaf
+- name: Ethernet2
+  description: L2_dc1-leaf2b_Ethernet8
+  shutdown: false
+  channel_group:
+    id: 1
+    mode: active
+  peer: dc1-leaf2b
+  peer_interface: Ethernet8
+  peer_type: l3leaf
 - name: Ethernet5
   description: SERVER_dc1-leaf2-server1_iLO
   shutdown: false
@@ -33,6 +51,15 @@ management_interfaces:
 metadata:
   platform: 720XP
   fabric_name: FABRIC
+port_channel_interfaces:
+- name: Port-Channel1
+  description: L2_DC1_L3_LEAF2_Port-Channel8
+  shutdown: false
+  switchport:
+    enabled: true
+    mode: trunk
+    trunk:
+      allowed_vlan: none
 prompt: virtual_friendly_prompt
 service_routing_protocols_model: multi-agent
 terminal:
