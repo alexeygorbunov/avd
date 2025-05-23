@@ -215,10 +215,21 @@ vlan 4094
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
-| Ethernet5 | SERVER_dc1-leaf1-server1_PCI2 | - | - | - | - | - |
 | Ethernet8 | L2_dc1-leaf1c_Ethernet2 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf1a_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf1a_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth1 | - | - | - | - | - |
+| Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
+| Ethernet13 | SERVER_DC1-LEAF1-SERVER1_Eth5 | *- | *- | *- | *- | 13 |
+| Ethernet14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | *- | *- | *- | *- | 14 |
+| Ethernet20 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
+| Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | *- | *- | *- | *- | 22 |
+| Ethernet31 | - | - | - | - | - | - |
+| Ethernet32 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
+| Ethernet33 | - | - | - | - | - | - |
+| Ethernet34 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
+| Ethernet35 | - | *- | *- | *- | *- | 35 |
+| Ethernet36 | EXCLUDED NETWORK_PORT PO | *- | *- | *- | *- | 36 |
 
 *Inherited from Port-Channel Interface
 
@@ -247,13 +258,6 @@ interface Ethernet2
    no switchport
    ip address 10.255.255.7/31
 !
-interface Ethernet5
-   description SERVER_dc1-leaf1-server1_PCI2
-   no shutdown
-   l2 mtu 10010
-   l2 mru 10020
-   switchport
-!
 interface Ethernet8
    description L2_dc1-leaf1c_Ethernet2
    no shutdown
@@ -268,6 +272,63 @@ interface Ethernet10
    description MLAG_dc1-leaf1a_Ethernet10
    no shutdown
    channel-group 9 mode active
+!
+interface Ethernet11
+   description SERVER_DC1-LEAF1-SERVER1_Eth1
+   no shutdown
+   switchport
+!
+interface Ethernet12
+   description EXCLUDED CONNECTED_ENDPOINT ADAPTER
+   no shutdown
+   switchport
+!
+interface Ethernet13
+   description SERVER_DC1-LEAF1-SERVER1_Eth5
+   no shutdown
+   channel-group 13 mode active
+!
+interface Ethernet14
+   description EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
+   no shutdown
+   channel-group 14 mode active
+!
+interface Ethernet20
+   description EXCLUDED CONNECTED_ENDPOINT
+   no shutdown
+   switchport
+!
+interface Ethernet22
+   description EXCLUDED CONNECTED_ENDPOINT
+   no shutdown
+   channel-group 22 mode active
+!
+interface Ethernet31
+   no shutdown
+   switchport
+!
+interface Ethernet32
+   description EXCLUDED NETWORK_PORT
+   no shutdown
+   switchport
+!
+interface Ethernet33
+   no shutdown
+   switchport
+!
+interface Ethernet34
+   description EXCLUDED NETWORK_PORT
+   no shutdown
+   switchport
+!
+interface Ethernet35
+   no shutdown
+   channel-group 35 mode active
+!
+interface Ethernet36
+   description EXCLUDED NETWORK_PORT PO
+   no shutdown
+   channel-group 36 mode active
 ```
 
 ### Port-Channel Interfaces
@@ -280,6 +341,11 @@ interface Ethernet10
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf1a_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
+| Port-Channel13 | SERVER_DC1-LEAF1-SERVER1 | - | - | - | - | - | - | 13 | - |
+| Port-Channel14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | - | - | - | - | - | - | 14 | - |
+| Port-Channel22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - | - | 22 | - |
+| Port-Channel35 | - | - | - | - | - | - | - | 35 | - |
+| Port-Channel36 | EXCLUDED NETWORK_PORT PO | - | - | - | - | - | - | 36 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -299,6 +365,35 @@ interface Port-Channel9
    switchport mode trunk
    switchport trunk group MLAG
    switchport
+!
+interface Port-Channel13
+   description SERVER_DC1-LEAF1-SERVER1
+   no shutdown
+   switchport
+   mlag 13
+!
+interface Port-Channel14
+   description EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
+   no shutdown
+   switchport
+   mlag 14
+!
+interface Port-Channel22
+   description EXCLUDED CONNECTED_ENDPOINT
+   no shutdown
+   switchport
+   mlag 22
+!
+interface Port-Channel35
+   no shutdown
+   switchport
+   mlag 35
+!
+interface Port-Channel36
+   description EXCLUDED NETWORK_PORT PO
+   no shutdown
+   switchport
+   mlag 36
 ```
 
 ### Loopback Interfaces

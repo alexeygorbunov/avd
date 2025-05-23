@@ -22,12 +22,22 @@ ethernet_interfaces:
   peer: dc1-leaf1b
   peer_interface: Ethernet8
   peer_type: l3leaf
-- name: Ethernet5
-  description: SERVER_dc1-leaf1-server1_iLO
+- name: Ethernet11
+  description: SERVER_DC1-LEAF1-SERVER1_iLO1
   shutdown: false
-  peer: dc1-leaf1-server1
-  peer_interface: iLO
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: iLO1
   peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet31
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet33
+  shutdown: false
+  peer_type: network_port
   switchport:
     enabled: true
 hostname: dc1-leaf1c

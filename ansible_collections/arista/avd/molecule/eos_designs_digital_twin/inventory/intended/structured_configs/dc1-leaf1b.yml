@@ -51,16 +51,92 @@ ethernet_interfaces:
   peer: dc1-leaf1c
   peer_interface: Ethernet2
   peer_type: l2leaf
-- name: Ethernet5
-  description: SERVER_dc1-leaf1-server1_PCI2
+- name: Ethernet11
+  description: SERVER_DC1-LEAF1-SERVER1_Eth1
   shutdown: false
-  l2_mtu: 10010
-  l2_mru: 10020
-  peer: dc1-leaf1-server1
-  peer_interface: PCI2
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: Eth1
   peer_type: server
   switchport:
     enabled: true
+- name: Ethernet12
+  description: EXCLUDED CONNECTED_ENDPOINT ADAPTER
+  shutdown: false
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: Eth3
+  peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet13
+  description: SERVER_DC1-LEAF1-SERVER1_Eth5
+  shutdown: false
+  channel_group:
+    id: 13
+    mode: active
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: Eth5
+  peer_type: server
+- name: Ethernet14
+  description: EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
+  shutdown: false
+  channel_group:
+    id: 14
+    mode: active
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: Eth7
+  peer_type: server
+- name: Ethernet20
+  description: EXCLUDED CONNECTED_ENDPOINT
+  shutdown: false
+  peer: DC1-LEAF1-SERVER2
+  peer_interface: Eth21
+  peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet22
+  description: EXCLUDED CONNECTED_ENDPOINT
+  shutdown: false
+  channel_group:
+    id: 22
+    mode: active
+  peer: DC1-LEAF1-SERVER2
+  peer_interface: Eth23
+  peer_type: server
+- name: Ethernet31
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet33
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet32
+  description: EXCLUDED NETWORK_PORT
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet34
+  description: EXCLUDED NETWORK_PORT
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet35
+  shutdown: false
+  channel_group:
+    id: 35
+    mode: active
+  peer_type: network_port
+- name: Ethernet36
+  description: EXCLUDED NETWORK_PORT PO
+  shutdown: false
+  channel_group:
+    id: 36
+    mode: active
+  peer_type: network_port
 hostname: dc1-leaf1b
 ip_igmp_snooping:
   globally_enabled: true
@@ -120,6 +196,35 @@ port_channel_interfaces:
     mode: trunk
     trunk:
       allowed_vlan: none
+- name: Port-Channel13
+  description: SERVER_DC1-LEAF1-SERVER1
+  shutdown: false
+  mlag: 13
+  switchport:
+    enabled: true
+- name: Port-Channel14
+  description: EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
+  shutdown: false
+  mlag: 14
+  switchport:
+    enabled: true
+- name: Port-Channel22
+  description: EXCLUDED CONNECTED_ENDPOINT
+  shutdown: false
+  mlag: 22
+  switchport:
+    enabled: true
+- name: Port-Channel35
+  shutdown: false
+  mlag: 35
+  switchport:
+    enabled: true
+- name: Port-Channel36
+  description: EXCLUDED NETWORK_PORT PO
+  shutdown: false
+  mlag: 36
+  switchport:
+    enabled: true
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY
   sequence_numbers:

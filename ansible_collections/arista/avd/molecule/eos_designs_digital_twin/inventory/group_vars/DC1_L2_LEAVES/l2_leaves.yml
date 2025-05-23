@@ -1,11 +1,11 @@
 ---
+
 type: l2leaf
 
 l2leaf:
   defaults:
     platform: 720XP
     digital_twin:
-      enabled: true
       os_version: "4.33.2F"
       platform: cloudeos
 

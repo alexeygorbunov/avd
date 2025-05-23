@@ -121,7 +121,9 @@ vlan internal order ascending range 1006 1199
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet1 | L2_dc1-leaf2a_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet2 | L2_dc1-leaf2b_Ethernet8 | *trunk | *none | *- | *- | 1 |
-| Ethernet5 | SERVER_dc1-leaf2-server1_iLO | - | - | - | - | - |
+| Ethernet12 | SERVER_DC1-LEAF2-SERVER1_iLO | - | - | - | - | - |
+| Ethernet32 | - | - | - | - | - | - |
+| Ethernet34 | - | - | - | - | - | - |
 
 *Inherited from Port-Channel Interface
 
@@ -139,8 +141,18 @@ interface Ethernet2
    no shutdown
    channel-group 1 mode active
 !
-interface Ethernet5
-   description SERVER_dc1-leaf2-server1_iLO
+interface Ethernet12
+   description SERVER_DC1-LEAF2-SERVER1_iLO
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet32
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet34
    no shutdown
    switchport
    poe reboot action maintain
@@ -226,7 +238,9 @@ no ip routing vrf MGMT
 
 | Interface | PoE Enabled | Priority | Limit | Reboot Action | Link Down Action | Shutdown Action | LLDP Negotiation | Legacy Detection |
 | --------- | --------- | --------- | ----------- | ----------- | ----------- | ----------- | --------- | --------- |
-| Ethernet5 | True | - | - | maintain | - | - | - | - |
+| Ethernet12 | True | - | - | maintain | - | - | - | - |
+| Ethernet32 | True | - | - | maintain | - | - | - | - |
+| Ethernet34 | True | - | - | maintain | - | - | - | - |
 
 ## VRF Instances
 

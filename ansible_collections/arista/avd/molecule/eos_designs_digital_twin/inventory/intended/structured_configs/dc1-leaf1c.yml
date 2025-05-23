@@ -22,15 +22,71 @@ ethernet_interfaces:
   peer: dc1-leaf1b
   peer_interface: Ethernet8
   peer_type: l3leaf
-- name: Ethernet5
-  description: SERVER_dc1-leaf1-server1_iLO
+- name: Ethernet11
+  description: SERVER_DC1-LEAF1-SERVER1_iLO1
   shutdown: false
   poe:
     reboot:
       action: maintain
-  peer: dc1-leaf1-server1
-  peer_interface: iLO
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: iLO1
   peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet12
+  description: EXCLUDED CONNECTED_ENDPOINT ADAPTER
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer: DC1-LEAF1-SERVER1
+  peer_interface: iLO2
+  peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet22
+  description: EXCLUDED CONNECTED_ENDPOINT
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer: DC1-LEAF1-SERVER2
+  peer_interface: iLO1
+  peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet31
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet33
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet32
+  description: EXCLUDED NETWORK_PORT
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet34
+  description: EXCLUDED NETWORK_PORT
+  shutdown: false
+  poe:
+    reboot:
+      action: maintain
+  peer_type: network_port
   switchport:
     enabled: true
 hostname: dc1-leaf1c

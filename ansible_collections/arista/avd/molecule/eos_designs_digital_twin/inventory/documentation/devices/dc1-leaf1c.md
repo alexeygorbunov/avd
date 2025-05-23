@@ -121,7 +121,13 @@ vlan internal order ascending range 1006 1199
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet1 | L2_dc1-leaf1a_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet2 | L2_dc1-leaf1b_Ethernet8 | *trunk | *none | *- | *- | 1 |
-| Ethernet5 | SERVER_dc1-leaf1-server1_iLO | - | - | - | - | - |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_iLO1 | - | - | - | - | - |
+| Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
+| Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
+| Ethernet31 | - | - | - | - | - | - |
+| Ethernet32 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
+| Ethernet33 | - | - | - | - | - | - |
+| Ethernet34 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
 
 *Inherited from Port-Channel Interface
 
@@ -139,8 +145,42 @@ interface Ethernet2
    no shutdown
    channel-group 1 mode active
 !
-interface Ethernet5
-   description SERVER_dc1-leaf1-server1_iLO
+interface Ethernet11
+   description SERVER_DC1-LEAF1-SERVER1_iLO1
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet12
+   description EXCLUDED CONNECTED_ENDPOINT ADAPTER
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet22
+   description EXCLUDED CONNECTED_ENDPOINT
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet31
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet32
+   description EXCLUDED NETWORK_PORT
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet33
+   no shutdown
+   switchport
+   poe reboot action maintain
+!
+interface Ethernet34
+   description EXCLUDED NETWORK_PORT
    no shutdown
    switchport
    poe reboot action maintain
@@ -226,7 +266,13 @@ no ip routing vrf MGMT
 
 | Interface | PoE Enabled | Priority | Limit | Reboot Action | Link Down Action | Shutdown Action | LLDP Negotiation | Legacy Detection |
 | --------- | --------- | --------- | ----------- | ----------- | ----------- | ----------- | --------- | --------- |
-| Ethernet5 | True | - | - | maintain | - | - | - | - |
+| Ethernet11 | True | - | - | maintain | - | - | - | - |
+| Ethernet12 | True | - | - | maintain | - | - | - | - |
+| Ethernet22 | True | - | - | maintain | - | - | - | - |
+| Ethernet31 | True | - | - | maintain | - | - | - | - |
+| Ethernet32 | True | - | - | maintain | - | - | - | - |
+| Ethernet33 | True | - | - | maintain | - | - | - | - |
+| Ethernet34 | True | - | - | maintain | - | - | - | - |
 
 ## VRF Instances
 

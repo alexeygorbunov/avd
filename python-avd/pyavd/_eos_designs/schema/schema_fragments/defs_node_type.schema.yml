@@ -1496,12 +1496,6 @@ $defs:
               table: node-type-digital-twin-configuration
             type: dict
             keys:
-              enabled:
-                type: bool
-                description: |-
-                  Include node(s) in the generated Digital Twin metadata.
-                  Digital Twin generation must be globally enabled for this key to take effect.
-                default: false
               platform:
                 type: str
                 description: |-

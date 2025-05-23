@@ -7960,6 +7960,7 @@ class EosDesigns(EosDesignsRootModel):
             "switch_ports": {"type": SwitchPorts},
             "description": {"type": str},
             "endpoint": {"type": str},
+            "digital_twin": {"type": bool, "default": True},
             "speed": {"type": str},
             "profile": {"type": str},
             "enabled": {"type": bool, "default": True},
@@ -8061,6 +8062,13 @@ class EosDesigns(EosDesignsRootModel):
         """
         endpoint: str | None
         """Name or description of the endpoints connected to these ports."""
+        digital_twin: bool
+        """
+        Setting this flag to `false` will exclude associated network ports from the generated Digital Twin
+        topology.
+
+        Default value: `True`
+        """
         speed: str | None
         """
         Set adapter speed in the format `<interface_speed>` or `forced <interface_speed>` or `auto
@@ -8201,6 +8209,7 @@ class EosDesigns(EosDesignsRootModel):
                 switch_ports: SwitchPorts | UndefinedType = Undefined,
                 description: str | None | UndefinedType = Undefined,
                 endpoint: str | None | UndefinedType = Undefined,
+                digital_twin: bool | UndefinedType = Undefined,
                 speed: str | None | UndefinedType = Undefined,
                 profile: str | None | UndefinedType = Undefined,
                 enabled: bool | UndefinedType = Undefined,
@@ -8300,6 +8309,9 @@ class EosDesigns(EosDesignsRootModel):
                        By default the description is templated from the `endpoint`
                        key if set.
                     endpoint: Name or description of the endpoints connected to these ports.
+                    digital_twin:
+                       Setting this flag to `false` will exclude associated network ports from the generated Digital Twin
+                       topology.
                     speed:
                        Set adapter speed in the format `<interface_speed>` or `forced <interface_speed>` or `auto
                        <interface_speed>`.
@@ -18161,6 +18173,7 @@ class EosDesigns(EosDesignsRootModel):
                         "switches": {"type": Switches},
                         "endpoint_ports": {"type": EndpointPorts},
                         "descriptions": {"type": Descriptions},
+                        "digital_twin": {"type": bool, "default": True},
                         "speed": {"type": str},
                         "description": {"type": str},
                         "profile": {"type": str},
@@ -18240,6 +18253,12 @@ class EosDesigns(EosDesignsRootModel):
                     switch.
 
                     Subclass of AvdList with `Any` items.
+                    """
+                    digital_twin: bool
+                    """
+                    Setting this flag to `false` will exclude adapter from the generated Digital Twin topology.
+
+                    Default value: `True`
                     """
                     speed: str | None
                     """
@@ -18399,6 +18418,7 @@ class EosDesigns(EosDesignsRootModel):
                             switches: Switches | UndefinedType = Undefined,
                             endpoint_ports: EndpointPorts | UndefinedType = Undefined,
                             descriptions: Descriptions | UndefinedType = Undefined,
+                            digital_twin: bool | UndefinedType = Undefined,
                             speed: str | None | UndefinedType = Undefined,
                             description: str | None | UndefinedType = Undefined,
                             profile: str | None | UndefinedType = Undefined,
@@ -18478,6 +18498,7 @@ class EosDesigns(EosDesignsRootModel):
                                    switch.
 
                                    Subclass of AvdList with `Any` items.
+                                digital_twin: Setting this flag to `false` will exclude adapter from the generated Digital Twin topology.
                                 speed:
                                    Set adapter speed in the format `<interface_speed>` or `forced <interface_speed>` or `auto
                                    <interface_speed>`.
@@ -18588,11 +18609,23 @@ class EosDesigns(EosDesignsRootModel):
 
                 Adapters._item_type = AdaptersItem
 
-                _fields: ClassVar[dict] = {"name": {"type": str}, "rack": {"type": str}, "adapters": {"type": Adapters}}
+                _fields: ClassVar[dict] = {
+                    "name": {"type": str},
+                    "rack": {"type": str},
+                    "digital_twin": {"type": bool, "default": True},
+                    "adapters": {"type": Adapters},
+                }
                 name: str
                 """Endpoint name will be used in the switchport description."""
                 rack: str | None
                 """Rack is used for documentation purposes only."""
+                digital_twin: bool
+                """
+                Setting this flag to `false` will exclude the endpoint and all associated adapters from the
+                generated Digital Twin topology.
+
+                Default value: `True`
+                """
                 adapters: Adapters
                 """
                 A list of adapters, group by adapters leveraging the same port-profile.
@@ -18608,6 +18641,7 @@ class EosDesigns(EosDesignsRootModel):
                         *,
                         name: str | UndefinedType = Undefined,
                         rack: str | None | UndefinedType = Undefined,
+                        digital_twin: bool | UndefinedType = Undefined,
                         adapters: Adapters | UndefinedType = Undefined,
                     ) -> None:
                         """
@@ -18619,6 +18653,9 @@ class EosDesigns(EosDesignsRootModel):
                         Args:
                             name: Endpoint name will be used in the switchport description.
                             rack: Rack is used for documentation purposes only.
+                            digital_twin:
+                               Setting this flag to `false` will exclude the endpoint and all associated adapters from the
+                               generated Digital Twin topology.
                             adapters:
                                A list of adapters, group by adapters leveraging the same port-profile.
 
@@ -21107,20 +21144,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -21142,7 +21166,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -21154,10 +21177,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:
@@ -25266,20 +25285,7 @@ class EosDesigns(EosDesignsRootModel):
                         class DigitalTwin(AvdModel):
                             """Subclass of AvdModel."""
 
-                            _fields: ClassVar[dict] = {
-                                "enabled": {"type": bool, "default": False},
-                                "platform": {"type": str},
-                                "os_version": {"type": str},
-                                "mgmt_ip": {"type": str},
-                            }
-                            enabled: bool
-                            """
-                            Include node(s) in the generated Digital Twin metadata.
-                            Digital Twin generation must be globally
-                            enabled for this key to take effect.
-
-                            Default value: `False`
-                            """
+                            _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                             platform: Literal["veos", "cloudeos"] | None
                             """
                             Desired virtual platform.
@@ -25301,7 +25307,6 @@ class EosDesigns(EosDesignsRootModel):
                                 def __init__(
                                     self,
                                     *,
-                                    enabled: bool | UndefinedType = Undefined,
                                     platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                     os_version: str | None | UndefinedType = Undefined,
                                     mgmt_ip: str | None | UndefinedType = Undefined,
@@ -25313,10 +25318,6 @@ class EosDesigns(EosDesignsRootModel):
                                     Subclass of AvdModel.
 
                                     Args:
-                                        enabled:
-                                           Include node(s) in the generated Digital Twin metadata.
-                                           Digital Twin generation must be globally
-                                           enabled for this key to take effect.
                                         platform:
                                            Desired virtual platform.
                                            Available option for ACT:
@@ -29371,20 +29372,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -29406,7 +29394,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -29418,10 +29405,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:
@@ -33540,20 +33523,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -33575,7 +33545,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -33587,10 +33556,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:
@@ -44649,20 +44614,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -44684,7 +44636,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -44696,10 +44647,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:
@@ -48808,20 +48755,7 @@ class EosDesigns(EosDesignsRootModel):
                         class DigitalTwin(AvdModel):
                             """Subclass of AvdModel."""
 
-                            _fields: ClassVar[dict] = {
-                                "enabled": {"type": bool, "default": False},
-                                "platform": {"type": str},
-                                "os_version": {"type": str},
-                                "mgmt_ip": {"type": str},
-                            }
-                            enabled: bool
-                            """
-                            Include node(s) in the generated Digital Twin metadata.
-                            Digital Twin generation must be globally
-                            enabled for this key to take effect.
-
-                            Default value: `False`
-                            """
+                            _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                             platform: Literal["veos", "cloudeos"] | None
                             """
                             Desired virtual platform.
@@ -48843,7 +48777,6 @@ class EosDesigns(EosDesignsRootModel):
                                 def __init__(
                                     self,
                                     *,
-                                    enabled: bool | UndefinedType = Undefined,
                                     platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                     os_version: str | None | UndefinedType = Undefined,
                                     mgmt_ip: str | None | UndefinedType = Undefined,
@@ -48855,10 +48788,6 @@ class EosDesigns(EosDesignsRootModel):
                                     Subclass of AvdModel.
 
                                     Args:
-                                        enabled:
-                                           Include node(s) in the generated Digital Twin metadata.
-                                           Digital Twin generation must be globally
-                                           enabled for this key to take effect.
                                         platform:
                                            Desired virtual platform.
                                            Available option for ACT:
@@ -52913,20 +52842,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -52948,7 +52864,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -52960,10 +52875,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:
@@ -57082,20 +56993,7 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {
-                            "enabled": {"type": bool, "default": False},
-                            "platform": {"type": str},
-                            "os_version": {"type": str},
-                            "mgmt_ip": {"type": str},
-                        }
-                        enabled: bool
-                        """
-                        Include node(s) in the generated Digital Twin metadata.
-                        Digital Twin generation must be globally
-                        enabled for this key to take effect.
-
-                        Default value: `False`
-                        """
+                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         platform: Literal["veos", "cloudeos"] | None
                         """
                         Desired virtual platform.
@@ -57117,7 +57015,6 @@ class EosDesigns(EosDesignsRootModel):
                             def __init__(
                                 self,
                                 *,
-                                enabled: bool | UndefinedType = Undefined,
                                 platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
                                 os_version: str | None | UndefinedType = Undefined,
                                 mgmt_ip: str | None | UndefinedType = Undefined,
@@ -57129,10 +57026,6 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    enabled:
-                                       Include node(s) in the generated Digital Twin metadata.
-                                       Digital Twin generation must be globally
-                                       enabled for this key to take effect.
                                     platform:
                                        Desired virtual platform.
                                        Available option for ACT:

@@ -215,10 +215,14 @@ vlan 4094
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
-| Ethernet5 | SERVER_dc1-leaf2-server1_PCI2 | - | - | - | - | - |
 | Ethernet8 | L2_dc1-leaf2c_Ethernet2 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf2a_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf2a_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
+| Ethernet12 | SERVER_DC1-LEAF2-SERVER1_Eth1 | - | - | - | - | - |
+| Ethernet14 | SERVER_DC1-LEAF2-SERVER1_Eth3 | *- | *- | *- | *- | 14 |
+| Ethernet32 | - | - | - | - | - | - |
+| Ethernet34 | - | - | - | - | - | - |
+| Ethernet36 | - | *- | *- | *- | *- | 36 |
 
 *Inherited from Port-Channel Interface
 
@@ -247,13 +251,6 @@ interface Ethernet2
    no switchport
    ip address 10.255.255.15/31
 !
-interface Ethernet5
-   description SERVER_dc1-leaf2-server1_PCI2
-   no shutdown
-   l2 mtu 10010
-   l2 mru 10020
-   switchport
-!
 interface Ethernet8
    description L2_dc1-leaf2c_Ethernet2
    no shutdown
@@ -268,6 +265,28 @@ interface Ethernet10
    description MLAG_dc1-leaf2a_Ethernet10
    no shutdown
    channel-group 9 mode active
+!
+interface Ethernet12
+   description SERVER_DC1-LEAF2-SERVER1_Eth1
+   no shutdown
+   switchport
+!
+interface Ethernet14
+   description SERVER_DC1-LEAF2-SERVER1_Eth3
+   no shutdown
+   channel-group 14 mode active
+!
+interface Ethernet32
+   no shutdown
+   switchport
+!
+interface Ethernet34
+   no shutdown
+   switchport
+!
+interface Ethernet36
+   no shutdown
+   channel-group 36 mode active
 ```
 
 ### Port-Channel Interfaces
@@ -280,6 +299,8 @@ interface Ethernet10
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel8 | L2_dc1-leaf2c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf2a_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
+| Port-Channel14 | SERVER_DC1-LEAF2-SERVER1 | - | - | - | - | - | - | 14 | - |
+| Port-Channel36 | - | - | - | - | - | - | - | 36 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -299,6 +320,17 @@ interface Port-Channel9
    switchport mode trunk
    switchport trunk group MLAG
    switchport
+!
+interface Port-Channel14
+   description SERVER_DC1-LEAF2-SERVER1
+   no shutdown
+   switchport
+   mlag 14
+!
+interface Port-Channel36
+   no shutdown
+   switchport
+   mlag 36
 ```
 
 ### Loopback Interfaces

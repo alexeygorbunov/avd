@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from pyavd._errors import AristaAvdInvalidInputsError
 from pyavd._utils import get
 from pyavd.api.fabric_documentation import FabricDocumentation
-from pyavd.j2filters import natural_sort
 
 if TYPE_CHECKING:
     from pyavd._eos_designs.eos_designs_facts.schema import EosDesignsFacts
@@ -147,7 +146,7 @@ def _get_digital_twin(fabric_documentation_facts: FabricDocumentationFacts) -> d
         msg = f"Digital Twin password for ACT must match for all fabric nodes: {digital_twin_fabric_username}."
         raise AristaAvdInvalidInputsError(msg)
 
-    for digital_twin_node_type in natural_sort(digital_twin_node_types):
+    for digital_twin_node_type in sorted(digital_twin_node_types):
         digital_twin_topology[digital_twin_node_type] = {
             "username": next(iter(digital_twin_fabric_username)),
             "password": next(iter(digital_twin_fabric_password)),
@@ -158,7 +157,7 @@ def _get_digital_twin(fabric_documentation_facts: FabricDocumentationFacts) -> d
             case "act":
                 # Render nodes
                 digital_twin_topology["nodes"] = []
-                for device in natural_sort(device_list):
+                for device in sorted(device_list):
                     digital_twin_topology["nodes"].append(
                         {
                             device: {

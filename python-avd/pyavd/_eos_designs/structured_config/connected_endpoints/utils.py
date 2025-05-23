@@ -55,8 +55,12 @@ class UtilsMixin(Protocol):
         filtered_connected_endpoints = EosDesigns._DynamicKeys.DynamicConnectedEndpointsItem.ConnectedEndpoints()
         for connected_endpoints_key in self.inputs._dynamic_keys.connected_endpoints:
             for connected_endpoint in connected_endpoints_key.value:
+                if self.inputs.digital_twin_mode and not connected_endpoint.digital_twin:
+                    continue
                 filtered_adapters = EosDesigns._DynamicKeys.DynamicConnectedEndpointsItem.ConnectedEndpointsItem.Adapters()
                 for adapter_index, adapter in enumerate(connected_endpoint.adapters):
+                    if self.inputs.digital_twin_mode and not adapter.digital_twin:
+                        continue
                     adapter._internal_data.context = f"{connected_endpoints_key.key}[name={connected_endpoint.name}].adapters[{adapter_index}]"
                     adapter_settings = self.shared_utils.get_merged_adapter_settings(adapter)
                     if not adapter_settings.switches or self.shared_utils.hostname not in adapter_settings.switches:
@@ -89,6 +93,8 @@ class UtilsMixin(Protocol):
         """Return list of endpoints defined under "network_ports" which are connected to this switch."""
         filtered_network_ports = EosDesigns.NetworkPorts()
         for index, network_port in enumerate(self.inputs.network_ports):
+            if self.inputs.digital_twin_mode and not network_port.digital_twin:
+                continue
             network_port._internal_data.context = f"network_ports[{index}]"
             network_port_settings = self.shared_utils.get_merged_adapter_settings(network_port)
 

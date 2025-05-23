@@ -51,16 +51,51 @@ ethernet_interfaces:
   peer: dc1-leaf2c
   peer_interface: Ethernet1
   peer_type: l2leaf
-- name: Ethernet5
-  description: SERVER_dc1-leaf2-server1_PCI1
+- name: Ethernet12
+  description: SERVER_DC1-LEAF2-SERVER1_Eth0
   shutdown: false
-  l2_mtu: 10010
-  l2_mru: 10020
-  peer: dc1-leaf2-server1
-  peer_interface: PCI1
+  peer: DC1-LEAF2-SERVER1
+  peer_interface: Eth0
   peer_type: server
   switchport:
     enabled: true
+- name: Ethernet14
+  description: SERVER_DC1-LEAF2-SERVER1_Eth2
+  shutdown: false
+  channel_group:
+    id: 14
+    mode: active
+  peer: DC1-LEAF2-SERVER1
+  peer_interface: Eth2
+  peer_type: server
+- name: Ethernet32
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet34
+  shutdown: false
+  peer_type: network_port
+  switchport:
+    enabled: true
+- name: Ethernet36
+  shutdown: false
+  channel_group:
+    id: 36
+    mode: active
+  peer_type: network_port
+- name: Ethernet38
+  shutdown: false
+  channel_group:
+    id: 37
+    mode: active
+  peer_type: network_port
+- name: Ethernet40
+  shutdown: false
+  channel_group:
+    id: 37
+    mode: active
+  peer_type: network_port
 hostname: dc1-leaf2a
 ip_igmp_snooping:
   globally_enabled: true
@@ -120,6 +155,22 @@ port_channel_interfaces:
     mode: trunk
     trunk:
       allowed_vlan: none
+- name: Port-Channel14
+  description: SERVER_DC1-LEAF2-SERVER1
+  shutdown: false
+  mlag: 14
+  switchport:
+    enabled: true
+- name: Port-Channel36
+  shutdown: false
+  mlag: 36
+  switchport:
+    enabled: true
+- name: Port-Channel37
+  shutdown: false
+  mlag: 37
+  switchport:
+    enabled: true
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY
   sequence_numbers:

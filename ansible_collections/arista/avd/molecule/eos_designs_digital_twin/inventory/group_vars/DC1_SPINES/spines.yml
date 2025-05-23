@@ -1,4 +1,5 @@
 ---
+
 type: spine
 
 spine:
@@ -7,7 +8,6 @@ spine:
     loopback_ipv4_pool: 10.255.0.0/27
     bgp_as: 65100
     digital_twin:
-      enabled: true
       os_version: "4.33.1.1F"
   nodes:
     - name: dc1-spine1

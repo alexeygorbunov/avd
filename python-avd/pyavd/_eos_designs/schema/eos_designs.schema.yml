@@ -2538,6 +2538,11 @@ keys:
         endpoint:
           type: str
           description: Name or description of the endpoints connected to these ports.
+        digital_twin:
+          type: bool
+          description: Setting this flag to `false` will exclude associated network
+            ports from the generated Digital Twin topology.
+          default: true
   network_services_keys:
     type: list
     primary_key: name
@@ -6043,6 +6048,11 @@ $defs:
         rack:
           type: str
           description: Rack is used for documentation purposes only.
+        digital_twin:
+          type: bool
+          description: Setting this flag to `false` will exclude the endpoint and
+            all associated adapters from the generated Digital Twin topology.
+          default: true
         adapters:
           type: list
           description: A list of adapters, group by adapters leveraging the same port-profile.
@@ -6098,6 +6108,11 @@ $defs:
                   `endpoint` - The name of the connected endpoint\n  - `endpoint_port`
                   - The value from `endpoint_ports` for this switch port if set.\n
                   \ - `port_channel_id`: The port-channel number for the switch."
+              digital_twin:
+                type: bool
+                description: Setting this flag to `false` will exclude adapter from
+                  the generated Digital Twin topology.
+                default: true
   flow_tracking_link:
     type: dict
     keys:
@@ -10001,13 +10016,6 @@ $defs:
               table: node-type-digital-twin-configuration
             type: dict
             keys:
-              enabled:
-                type: bool
-                description: 'Include node(s) in the generated Digital Twin metadata.
-
-                  Digital Twin generation must be globally enabled for this key to
-                  take effect.'
-                default: false
               platform:
                 type: str
                 description: "Desired virtual platform.\nAvailable option for ACT:\n
