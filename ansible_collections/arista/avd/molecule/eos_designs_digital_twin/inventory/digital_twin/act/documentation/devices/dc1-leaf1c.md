@@ -13,6 +13,7 @@
   - [Internal VLAN Allocation Policy Device Configuration](#internal-vlan-allocation-policy-device-configuration)
 - [Interfaces](#interfaces)
   - [Ethernet Interfaces](#ethernet-interfaces)
+  - [Port-Channel Interfaces](#port-channel-interfaces)
 - [Routing](#routing)
   - [Service Routing Protocols Model](#service-routing-protocols-model)
   - [IP Routing](#ip-routing)
@@ -116,6 +117,8 @@ vlan internal order ascending range 1006 1199
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
+| Ethernet1 | L2_dc1-leaf1a_Ethernet8 | *trunk | *none | *- | *- | 1 |
+| Ethernet2 | L2_dc1-leaf1b_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet5 | SERVER_dc1-leaf1-server1_iLO | - | - | - | - | - |
 
 *Inherited from Port-Channel Interface
@@ -124,9 +127,41 @@ vlan internal order ascending range 1006 1199
 
 ```eos
 !
+interface Ethernet1
+   description L2_dc1-leaf1a_Ethernet8
+   no shutdown
+   channel-group 1 mode active
+!
+interface Ethernet2
+   description L2_dc1-leaf1b_Ethernet8
+   no shutdown
+   channel-group 1 mode active
+!
 interface Ethernet5
    description SERVER_dc1-leaf1-server1_iLO
    no shutdown
+   switchport
+```
+
+### Port-Channel Interfaces
+
+#### Port-Channel Interfaces Summary
+
+##### L2
+
+| Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
+| --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
+| Port-Channel1 | L2_DC1_L3_LEAF1_Port-Channel8 | trunk | none | - | - | - | - | - | - |
+
+#### Port-Channel Interfaces Device Configuration
+
+```eos
+!
+interface Port-Channel1
+   description L2_DC1_L3_LEAF1_Port-Channel8
+   no shutdown
+   switchport trunk allowed vlan none
+   switchport mode trunk
    switchport
 ```
 

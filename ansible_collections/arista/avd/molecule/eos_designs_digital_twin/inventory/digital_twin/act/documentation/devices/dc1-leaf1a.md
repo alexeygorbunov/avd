@@ -199,6 +199,7 @@ vlan 4094
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet5 | SERVER_dc1-leaf1-server1_PCI1 | - | - | - | - | - |
+| Ethernet8 | L2_dc1-leaf1c_Ethernet1 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf1b_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf1b_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
 
@@ -236,6 +237,11 @@ interface Ethernet5
    l2 mru 10020
    switchport
 !
+interface Ethernet8
+   description L2_dc1-leaf1c_Ethernet1
+   no shutdown
+   channel-group 8 mode active
+!
 interface Ethernet9
    description MLAG_dc1-leaf1b_Ethernet9
    no shutdown
@@ -255,11 +261,20 @@ interface Ethernet10
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
+| Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf1b_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
 
 #### Port-Channel Interfaces Device Configuration
 
 ```eos
+!
+interface Port-Channel8
+   description L2_dc1-leaf1c_Port-Channel1
+   no shutdown
+   switchport trunk allowed vlan none
+   switchport mode trunk
+   switchport
+   mlag 8
 !
 interface Port-Channel9
    description MLAG_dc1-leaf1b_Port-Channel9

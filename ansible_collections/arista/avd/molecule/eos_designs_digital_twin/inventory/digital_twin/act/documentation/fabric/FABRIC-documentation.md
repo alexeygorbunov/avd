@@ -39,16 +39,20 @@
 | ---- | ---- | -------------- | --------- | ----------| -------------- |
 | l3leaf | dc1-leaf1a | Ethernet1 | spine | dc1-spine1 | Ethernet1 |
 | l3leaf | dc1-leaf1a | Ethernet2 | spine | dc1-spine2 | Ethernet1 |
+| l3leaf | dc1-leaf1a | Ethernet8 | l2leaf | dc1-leaf1c | Ethernet1 |
 | l3leaf | dc1-leaf1a | Ethernet9 | mlag_peer | dc1-leaf1b | Ethernet9 |
 | l3leaf | dc1-leaf1a | Ethernet10 | mlag_peer | dc1-leaf1b | Ethernet10 |
 | l3leaf | dc1-leaf1b | Ethernet1 | spine | dc1-spine1 | Ethernet2 |
 | l3leaf | dc1-leaf1b | Ethernet2 | spine | dc1-spine2 | Ethernet2 |
+| l3leaf | dc1-leaf1b | Ethernet8 | l2leaf | dc1-leaf1c | Ethernet2 |
 | l3leaf | dc1-leaf2a | Ethernet1 | spine | dc1-spine1 | Ethernet3 |
 | l3leaf | dc1-leaf2a | Ethernet2 | spine | dc1-spine2 | Ethernet3 |
+| l3leaf | dc1-leaf2a | Ethernet8 | l2leaf | dc1-leaf2c | Ethernet1 |
 | l3leaf | dc1-leaf2a | Ethernet9 | mlag_peer | dc1-leaf2b | Ethernet9 |
 | l3leaf | dc1-leaf2a | Ethernet10 | mlag_peer | dc1-leaf2b | Ethernet10 |
 | l3leaf | dc1-leaf2b | Ethernet1 | spine | dc1-spine1 | Ethernet4 |
 | l3leaf | dc1-leaf2b | Ethernet2 | spine | dc1-spine2 | Ethernet4 |
+| l3leaf | dc1-leaf2b | Ethernet8 | l2leaf | dc1-leaf2c | Ethernet2 |
 
 ## Fabric IP Allocation
 

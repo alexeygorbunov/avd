@@ -42,6 +42,15 @@ ethernet_interfaces:
   peer_type: spine
   switchport:
     enabled: false
+- name: Ethernet8
+  description: L2_dc1-leaf2c_Ethernet1
+  shutdown: false
+  channel_group:
+    id: 8
+    mode: active
+  peer: dc1-leaf2c
+  peer_interface: Ethernet1
+  peer_type: l2leaf
 - name: Ethernet5
   description: SERVER_dc1-leaf2-server1_PCI1
   shutdown: false
@@ -105,6 +114,15 @@ port_channel_interfaces:
     trunk:
       groups:
       - MLAG
+- name: Port-Channel8
+  description: L2_dc1-leaf2c_Port-Channel1
+  shutdown: false
+  mlag: 8
+  switchport:
+    enabled: true
+    mode: trunk
+    trunk:
+      allowed_vlan: none
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY
   sequence_numbers:
