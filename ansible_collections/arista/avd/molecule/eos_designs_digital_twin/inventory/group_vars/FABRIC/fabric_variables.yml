@@ -1,0 +1,22 @@
+---
+fabric_name: FABRIC
+
+eos_designs_documentation:
+  topology_csv: true
+  p2p_links_csv: true
+
+custom_structured_configuration_prefix:
+  - 'custom_structured_configuration_'
+  - 'hw_custom_structured_configuration_'
+
+custom_structured_configuration_prompt: "virtual_friendly_prompt"
+hw_custom_structured_configuration_terminal:
+  length: 100
+  width: 100
+
+digital_twin:
+  environment: act
+  username:
+    fabric: act_user
+  password:
+    fabric: act_pass

@@ -60,7 +60,6 @@ options:
     type: str
   digital_twin:
     description: Generate Digital Twin topology information.
-    required: true
     default: false
     type: bool
 """
