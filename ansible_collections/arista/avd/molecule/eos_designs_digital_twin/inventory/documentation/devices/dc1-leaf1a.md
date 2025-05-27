@@ -218,13 +218,13 @@ vlan 4094
 | Ethernet8 | L2_dc1-leaf1c_Ethernet1 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf1b_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf1b_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
-| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth0 | - | - | - | - | - |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth1 | - | - | - | - | - |
 | Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
-| Ethernet13 | SERVER_DC1-LEAF1-SERVER1_Eth4 | *- | *- | *- | *- | 13 |
+| Ethernet13 | SERVER_DC1-LEAF1-SERVER2_Eth1 | *- | *- | *- | *- | 13 |
 | Ethernet14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | *- | *- | *- | *- | 14 |
-| Ethernet15 | SERVER_DC1-LEAF1-SERVER1_Eth8 | *- | *- | *- | *- | 15 |
+| Ethernet15 | SERVER_DC1-LEAF1-SERVER3_Eth1 | *- | *- | *- | *- | 15 |
 | Ethernet16 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | *- | *- | *- | *- | 16 |
-| Ethernet17 | SERVER_DC1-LEAF1-SERVER1_Eth9 | *- | *- | *- | *- | 15 |
+| Ethernet17 | SERVER_DC1-LEAF1-SERVER3_Eth2 | *- | *- | *- | *- | 15 |
 | Ethernet18 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | *- | *- | *- | *- | 16 |
 | Ethernet20 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
 | Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | *- | *- | *- | *- | 22 |
@@ -284,7 +284,7 @@ interface Ethernet10
    channel-group 9 mode active
 !
 interface Ethernet11
-   description SERVER_DC1-LEAF1-SERVER1_Eth0
+   description SERVER_DC1-LEAF1-SERVER1_Eth1
    no shutdown
    switchport
 !
@@ -294,7 +294,7 @@ interface Ethernet12
    switchport
 !
 interface Ethernet13
-   description SERVER_DC1-LEAF1-SERVER1_Eth4
+   description SERVER_DC1-LEAF1-SERVER2_Eth1
    no shutdown
    channel-group 13 mode active
 !
@@ -304,7 +304,7 @@ interface Ethernet14
    channel-group 14 mode active
 !
 interface Ethernet15
-   description SERVER_DC1-LEAF1-SERVER1_Eth8
+   description SERVER_DC1-LEAF1-SERVER3_Eth1
    no shutdown
    channel-group 15 mode active
 !
@@ -314,7 +314,7 @@ interface Ethernet16
    channel-group 16 mode active
 !
 interface Ethernet17
-   description SERVER_DC1-LEAF1-SERVER1_Eth9
+   description SERVER_DC1-LEAF1-SERVER3_Eth2
    no shutdown
    channel-group 15 mode active
 !
@@ -399,9 +399,9 @@ interface Ethernet40
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf1b_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
-| Port-Channel13 | SERVER_DC1-LEAF1-SERVER1 | - | - | - | - | - | - | 13 | - |
+| Port-Channel13 | SERVER_DC1-LEAF1-SERVER2 | - | - | - | - | - | - | 13 | - |
 | Port-Channel14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | - | - | - | - | - | - | 14 | - |
-| Port-Channel15 | SERVER_DC1-LEAF1-SERVER1 | - | - | - | - | - | - | - | - |
+| Port-Channel15 | SERVER_DC1-LEAF1-SERVER3 | - | - | - | - | - | - | - | - |
 | Port-Channel16 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | - | - | - | - | - | - | - | - |
 | Port-Channel22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - | - | 22 | - |
 | Port-Channel24 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - | - | - | - |
@@ -430,7 +430,7 @@ interface Port-Channel9
    switchport
 !
 interface Port-Channel13
-   description SERVER_DC1-LEAF1-SERVER1
+   description SERVER_DC1-LEAF1-SERVER2
    no shutdown
    switchport
    mlag 13
@@ -442,7 +442,7 @@ interface Port-Channel14
    mlag 14
 !
 interface Port-Channel15
-   description SERVER_DC1-LEAF1-SERVER1
+   description SERVER_DC1-LEAF1-SERVER3
    no shutdown
    switchport
 !

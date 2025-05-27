@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     T = TypeVar("T", bound="EosDesignsRootModel")
 
-SKIP_KEYS = ["custom_structured_configuration_list_merge", "custom_structured_configuration_prefix"]
+SKIP_KEYS = ["custom_structured_configuration_list_merge", "custom_structured_configuration_prefix", "digital_twin_custom_structured_configuration_prefix"]
 
 
 class EosDesignsRootModel(AvdModel):
@@ -65,7 +65,15 @@ class EosDesignsRootModel(AvdModel):
 
         Find any keys starting with any prefix defined under "custom_structured_configuration_prefix".
         """
-        prefixes = data.get("custom_structured_configuration_prefix", cls._get_field_default_value("custom_structured_configuration_prefix"))
+        digital_twin_mode = data.get("digital_twin_mode", False)
+
+        if not digital_twin_mode:
+            prefixes = data.get("custom_structured_configuration_prefix", cls._get_field_default_value("custom_structured_configuration_prefix"))
+        else:
+            prefixes = data.get(
+                "digital_twin_custom_structured_configuration_prefix", cls._get_field_default_value("digital_twin_custom_structured_configuration_prefix")
+            )
+
         if not isinstance(prefixes, (list, AvdList)):
             # Invalid prefix format.
             return
@@ -73,10 +81,6 @@ class EosDesignsRootModel(AvdModel):
         for prefix in prefixes:
             if not isinstance(prefix, str):
                 # Invalid prefix format.
-                continue
-
-            # In Digital Twin generation mode - skip all custom structure configuration prefixes that start with "hw_"
-            if data.get("digital_twin_mode", False) and prefix.startswith("hw_"):
                 continue
 
             if not (matching_keys := [key for key in data if str(key).startswith(prefix) and key not in SKIP_KEYS]):

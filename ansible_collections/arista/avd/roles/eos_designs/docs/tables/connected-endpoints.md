@@ -10,7 +10,9 @@
     | [<samp>&lt;connected_endpoints_keys.key&gt;</samp>](## "<connected_endpoints_keys.key>") | List, items: Dictionary |  |  |  | This should be applied to group_vars or host_vars where endpoints are connecting.<br>`connected_endpoints_keys.key` is one of the keys under "connected_endpoints_keys".<br> |
     | [<samp>&nbsp;&nbsp;-&nbsp;name</samp>](## "<connected_endpoints_keys.key>.[].name") | String | Required, Unique |  |  | Endpoint name will be used in the switchport description. |
     | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;rack</samp>](## "<connected_endpoints_keys.key>.[].rack") | String |  |  |  | Rack is used for documentation purposes only. |
-    | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;digital_twin</samp>](## "<connected_endpoints_keys.key>.[].digital_twin") | Boolean |  | `True` |  | Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology. |
+    | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;digital_twin</samp>](## "<connected_endpoints_keys.key>.[].digital_twin") | Dictionary |  |  |  |  |
+    | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enabled</samp>](## "<connected_endpoints_keys.key>.[].digital_twin.enabled") | Boolean |  | `True` |  | Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology. |
+    | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;generate_ports</samp>](## "<connected_endpoints_keys.key>.[].digital_twin.generate_ports") | Boolean |  | `False` |  | Setting this flag to `true` will force all port names of the associated endpoint to be renamed based on the `EthX` pattern.<br>This may be required in cases where Digital Twin environment enforces specific port naming convention. For example - ACT only supporting<br>`Eth.*|Ma.*` patterns. Attempt to generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation of<br>the invalid topology file. |
     | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;adapters</samp>](## "<connected_endpoints_keys.key>.[].adapters") | List, items: Dictionary |  |  |  | A list of adapters, group by adapters leveraging the same port-profile. |
     | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;switch_ports</samp>](## "<connected_endpoints_keys.key>.[].adapters.[].switch_ports") | List, items: String | Required |  |  | List of switch interfaces.<br>The lists `endpoint_ports`, `switch_ports`, and `switches` must have the same length.<br> |
     | [<samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&lt;str&gt;</samp>](## "<connected_endpoints_keys.key>.[].adapters.[].switch_ports.[]") | String |  |  |  | Switchport interface. |
@@ -203,9 +205,16 @@
 
         # Rack is used for documentation purposes only.
         rack: <str>
+        digital_twin:
 
-        # Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology.
-        digital_twin: <bool; default=True>
+          # Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology.
+          enabled: <bool; default=True>
+
+          # Setting this flag to `true` will force all port names of the associated endpoint to be renamed based on the `EthX` pattern.
+          # This may be required in cases where Digital Twin environment enforces specific port naming convention. For example - ACT only supporting
+          # `Eth.*|Ma.*` patterns. Attempt to generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation of
+          # the invalid topology file.
+          generate_ports: <bool; default=False>
 
         # A list of adapters, group by adapters leveraging the same port-profile.
         adapters:

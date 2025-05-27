@@ -4,6 +4,7 @@
 
 - [Management](#management)
   - [Management Interfaces](#management-interfaces)
+  - [NTP](#ntp)
   - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
   - [Enable Password](#enable-password)
@@ -70,6 +71,23 @@ interface Management1
    no shutdown
    vrf MGMT
    ip address 172.16.1.102/24
+```
+
+### NTP
+
+#### NTP Summary
+
+##### NTP Servers
+
+| Server | VRF | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
+| ------ | --- | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
+| ntp_server_for_virtual_nodes_only.ntp.org | - | - | - | - | - | - | - | - | - |
+
+#### NTP Device Configuration
+
+```eos
+!
+ntp server ntp_server_for_virtual_nodes_only.ntp.org
 ```
 
 ### Management API HTTP
@@ -201,8 +219,8 @@ vlan 4094
 | Ethernet8 | L2_dc1-leaf1c_Ethernet2 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf1a_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf1a_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
-| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth1 | - | - | - | - | - |
-| Ethernet13 | SERVER_DC1-LEAF1-SERVER1_Eth5 | *- | *- | *- | *- | 13 |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth2 | - | - | - | - | - |
+| Ethernet13 | SERVER_DC1-LEAF1-SERVER2_Eth2 | *- | *- | *- | *- | 13 |
 | Ethernet31 | - | - | - | - | - | - |
 | Ethernet33 | - | - | - | - | - | - |
 | Ethernet35 | - | *- | *- | *- | *- | 35 |
@@ -250,12 +268,12 @@ interface Ethernet10
    channel-group 9 mode active
 !
 interface Ethernet11
-   description SERVER_DC1-LEAF1-SERVER1_Eth1
+   description SERVER_DC1-LEAF1-SERVER1_Eth2
    no shutdown
    switchport
 !
 interface Ethernet13
-   description SERVER_DC1-LEAF1-SERVER1_Eth5
+   description SERVER_DC1-LEAF1-SERVER2_Eth2
    no shutdown
    channel-group 13 mode active
 !
@@ -282,7 +300,7 @@ interface Ethernet35
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf1a_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
-| Port-Channel13 | SERVER_DC1-LEAF1-SERVER1 | - | - | - | - | - | - | 13 | - |
+| Port-Channel13 | SERVER_DC1-LEAF1-SERVER2 | - | - | - | - | - | - | 13 | - |
 | Port-Channel35 | - | - | - | - | - | - | - | 35 | - |
 
 #### Port-Channel Interfaces Device Configuration
@@ -305,7 +323,7 @@ interface Port-Channel9
    switchport
 !
 interface Port-Channel13
-   description SERVER_DC1-LEAF1-SERVER1
+   description SERVER_DC1-LEAF1-SERVER2
    no shutdown
    switchport
    mlag 13

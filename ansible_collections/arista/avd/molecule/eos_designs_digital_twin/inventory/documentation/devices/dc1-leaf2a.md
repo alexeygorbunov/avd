@@ -218,8 +218,8 @@ vlan 4094
 | Ethernet8 | L2_dc1-leaf2c_Ethernet1 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf2b_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf2b_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
-| Ethernet12 | SERVER_DC1-LEAF2-SERVER1_Eth0 | - | - | - | - | - |
-| Ethernet14 | SERVER_DC1-LEAF2-SERVER1_Eth2 | *- | *- | *- | *- | 14 |
+| Ethernet12 | SERVER_DC1-LEAF2-SERVER1_Eth1 | - | - | - | - | - |
+| Ethernet14 | SERVER_DC1-LEAF2-SERVER1_Eth3 | *- | *- | *- | *- | 14 |
 | Ethernet32 | - | - | - | - | - | - |
 | Ethernet34 | - | - | - | - | - | - |
 | Ethernet36 | - | *- | *- | *- | *- | 36 |
@@ -269,12 +269,12 @@ interface Ethernet10
    channel-group 9 mode active
 !
 interface Ethernet12
-   description SERVER_DC1-LEAF2-SERVER1_Eth0
+   description SERVER_DC1-LEAF2-SERVER1_Eth1
    no shutdown
    switchport
 !
 interface Ethernet14
-   description SERVER_DC1-LEAF2-SERVER1_Eth2
+   description SERVER_DC1-LEAF2-SERVER1_Eth3
    no shutdown
    channel-group 14 mode active
 !

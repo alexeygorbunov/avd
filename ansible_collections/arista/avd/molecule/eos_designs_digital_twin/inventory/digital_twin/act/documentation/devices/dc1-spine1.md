@@ -4,6 +4,7 @@
 
 - [Management](#management)
   - [Management Interfaces](#management-interfaces)
+  - [NTP](#ntp)
   - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
   - [Enable Password](#enable-password)
@@ -58,6 +59,23 @@ interface Management1
    no shutdown
    vrf MGMT
    ip address 172.16.1.11/24
+```
+
+### NTP
+
+#### NTP Summary
+
+##### NTP Servers
+
+| Server | VRF | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
+| ------ | --- | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
+| ntp_server_for_virtual_nodes_only.ntp.org | - | - | - | - | - | - | - | - | - |
+
+#### NTP Device Configuration
+
+```eos
+!
+ntp server ntp_server_for_virtual_nodes_only.ntp.org
 ```
 
 ### Management API HTTP

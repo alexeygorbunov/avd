@@ -23,10 +23,10 @@ ethernet_interfaces:
   peer_interface: Ethernet8
   peer_type: l3leaf
 - name: Ethernet11
-  description: SERVER_DC1-LEAF1-SERVER1_iLO1
+  description: SERVER_DC1-LEAF1-SERVER3_Eth3
   shutdown: false
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: iLO1
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth3
   peer_type: server
   switchport:
     enabled: true
@@ -65,6 +65,9 @@ metadata:
     version: 4.33.2F
     username: act_user
     password: act_pass
+ntp:
+  servers:
+  - name: ntp_server_for_virtual_nodes_only.ntp.org
 port_channel_interfaces:
 - name: Port-Channel1
   description: L2_DC1_L3_LEAF1_Port-Channel8

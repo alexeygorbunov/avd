@@ -2916,6 +2916,11 @@ class EosDesigns(EosDesignsRootModel):
 
                 """
 
+    class DigitalTwinCustomStructuredConfigurationPrefix(AvdList[str]):
+        """Subclass of AvdList with `str` items."""
+
+    DigitalTwinCustomStructuredConfigurationPrefix._item_type = str
+
     class EosDesignsCustomTemplatesItem(AvdModel):
         """Subclass of AvdModel."""
 
@@ -17093,6 +17098,56 @@ class EosDesigns(EosDesignsRootModel):
             class ConnectedEndpointsItem(AvdModel):
                 """Subclass of AvdModel."""
 
+                class DigitalTwin(AvdModel):
+                    """Subclass of AvdModel."""
+
+                    _fields: ClassVar[dict] = {"enabled": {"type": bool, "default": True}, "generate_ports": {"type": bool, "default": False}}
+                    enabled: bool
+                    """
+                    Setting this flag to `false` will exclude the endpoint and all associated adapters from the
+                    generated Digital Twin topology.
+
+                    Default value: `True`
+                    """
+                    generate_ports: bool
+                    """
+                    Setting this flag to `true` will force all port names of the associated endpoint to be renamed based
+                    on the `EthX` pattern.
+                    This may be required in cases where Digital Twin environment enforces
+                    specific port naming convention. For example - ACT only supporting
+                    `Eth.*|Ma.*` patterns. Attempt to
+                    generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation
+                    of
+                    the invalid topology file.
+
+                    Default value: `False`
+                    """
+
+                    if TYPE_CHECKING:
+
+                        def __init__(self, *, enabled: bool | UndefinedType = Undefined, generate_ports: bool | UndefinedType = Undefined) -> None:
+                            """
+                            DigitalTwin.
+
+
+                            Subclass of AvdModel.
+
+                            Args:
+                                enabled:
+                                   Setting this flag to `false` will exclude the endpoint and all associated adapters from the
+                                   generated Digital Twin topology.
+                                generate_ports:
+                                   Setting this flag to `true` will force all port names of the associated endpoint to be renamed based
+                                   on the `EthX` pattern.
+                                   This may be required in cases where Digital Twin environment enforces
+                                   specific port naming convention. For example - ACT only supporting
+                                   `Eth.*|Ma.*` patterns. Attempt to
+                                   generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation
+                                   of
+                                   the invalid topology file.
+
+                            """
+
                 class AdaptersItem(AvdModel):
                     """Subclass of AvdModel."""
 
@@ -18609,23 +18664,13 @@ class EosDesigns(EosDesignsRootModel):
 
                 Adapters._item_type = AdaptersItem
 
-                _fields: ClassVar[dict] = {
-                    "name": {"type": str},
-                    "rack": {"type": str},
-                    "digital_twin": {"type": bool, "default": True},
-                    "adapters": {"type": Adapters},
-                }
+                _fields: ClassVar[dict] = {"name": {"type": str}, "rack": {"type": str}, "digital_twin": {"type": DigitalTwin}, "adapters": {"type": Adapters}}
                 name: str
                 """Endpoint name will be used in the switchport description."""
                 rack: str | None
                 """Rack is used for documentation purposes only."""
-                digital_twin: bool
-                """
-                Setting this flag to `false` will exclude the endpoint and all associated adapters from the
-                generated Digital Twin topology.
-
-                Default value: `True`
-                """
+                digital_twin: DigitalTwin
+                """Subclass of AvdModel."""
                 adapters: Adapters
                 """
                 A list of adapters, group by adapters leveraging the same port-profile.
@@ -18641,7 +18686,7 @@ class EosDesigns(EosDesignsRootModel):
                         *,
                         name: str | UndefinedType = Undefined,
                         rack: str | None | UndefinedType = Undefined,
-                        digital_twin: bool | UndefinedType = Undefined,
+                        digital_twin: DigitalTwin | UndefinedType = Undefined,
                         adapters: Adapters | UndefinedType = Undefined,
                     ) -> None:
                         """
@@ -18653,9 +18698,7 @@ class EosDesigns(EosDesignsRootModel):
                         Args:
                             name: Endpoint name will be used in the switchport description.
                             rack: Rack is used for documentation purposes only.
-                            digital_twin:
-                               Setting this flag to `false` will exclude the endpoint and all associated adapters from the
-                               generated Digital Twin topology.
+                            digital_twin: Subclass of AvdModel.
                             adapters:
                                A list of adapters, group by adapters leveraging the same port-profile.
 
@@ -58835,6 +58878,10 @@ class EosDesigns(EosDesignsRootModel):
         "default_vrf_diag_loopback_description": {"type": str, "default": "DIAG_VRF_{vrf}"},
         "design": {"type": Design},
         "digital_twin": {"type": DigitalTwin},
+        "digital_twin_custom_structured_configuration_prefix": {
+            "type": DigitalTwinCustomStructuredConfigurationPrefix,
+            "default": lambda cls: coerce_type(["digital_twin_custom_structured_configuration_"], target_type=cls),
+        },
         "digital_twin_mode": {"type": bool, "default": False},
         "enable_trunk_groups": {"type": bool, "default": False},
         "eos_designs_custom_templates": {"type": EosDesignsCustomTemplates},
@@ -59684,6 +59731,16 @@ class EosDesigns(EosDesignsRootModel):
     """Subclass of AvdModel."""
     digital_twin: DigitalTwin
     """Subclass of AvdModel."""
+    digital_twin_custom_structured_configuration_prefix: DigitalTwinCustomStructuredConfigurationPrefix
+    """
+    Custom EOS Structured Configuration keys that will only be applied to the fabric nodes in the
+    Digital Twin mode.
+
+
+    Subclass of AvdList with `str` items.
+
+    Default value: `lambda cls: coerce_type(["digital_twin_custom_structured_configuration_"], target_type=cls)`
+    """
     digital_twin_mode: bool
     """
     Globally enable generation of the Digital Twin metadata (topology, configuration, etc.).
@@ -61028,6 +61085,7 @@ class EosDesigns(EosDesignsRootModel):
             default_vrf_diag_loopback_description: str | UndefinedType = Undefined,
             design: Design | UndefinedType = Undefined,
             digital_twin: DigitalTwin | UndefinedType = Undefined,
+            digital_twin_custom_structured_configuration_prefix: DigitalTwinCustomStructuredConfigurationPrefix | UndefinedType = Undefined,
             digital_twin_mode: bool | UndefinedType = Undefined,
             enable_trunk_groups: bool | UndefinedType = Undefined,
             eos_designs_custom_templates: EosDesignsCustomTemplates | UndefinedType = Undefined,
@@ -61583,6 +61641,12 @@ class EosDesigns(EosDesignsRootModel):
                    templated from the VRF name.
                 design: Subclass of AvdModel.
                 digital_twin: Subclass of AvdModel.
+                digital_twin_custom_structured_configuration_prefix:
+                   Custom EOS Structured Configuration keys that will only be applied to the fabric nodes in the
+                   Digital Twin mode.
+
+
+                   Subclass of AvdList with `str` items.
                 digital_twin_mode: Globally enable generation of the Digital Twin metadata (topology, configuration, etc.).
                 enable_trunk_groups:
                    Enable Trunk Group support across eos_designs.

@@ -12,6 +12,9 @@
   - [Loopback0 Interfaces Node Allocation](#loopback0-interfaces-node-allocation)
   - [VTEP Loopback VXLAN Tunnel Source Interfaces (VTEPs Only)](#vtep-loopback-vxlan-tunnel-source-interfaces-vteps-only)
   - [VTEP Loopback Node allocation](#vtep-loopback-node-allocation)
+- [Connected Endpoints](#connected-endpoints)
+  - [Connected Endpoint Keys](#connected-endpoint-keys)
+  - [Servers](#servers)
 
 ## Fabric Switches and Management IP
 
@@ -87,3 +90,23 @@
 | --- | ---- | --------- |
 | DIGITAL_TWIN | dc1-leaf1a | 10.255.1.3/32 |
 | DIGITAL_TWIN | dc1-leaf1b | 10.255.1.3/32 |
+
+## Connected Endpoints
+
+### Connected Endpoint Keys
+
+| Key | Type | Description |
+| --- | ---- | ----------- |
+| servers | server | Server |
+
+### Servers
+
+| Name | Port | Fabric Device | Fabric Port | Description | Shutdown | Mode | Access VLAN | Trunk Allowed VLANs | Profile |
+| ---- | ---- | ------------- | ------------| ----------- | -------- | ---- | ----------- | ------------------- | ------- |
+| DC1-LEAF1-SERVER1 | Eth1 | dc1-leaf1a | Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth1 | False | - | - | - | - |
+| DC1-LEAF1-SERVER1 | Eth2 | dc1-leaf1b | Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth2 | False | - | - | - | - |
+| DC1-LEAF1-SERVER2 | Eth1 | dc1-leaf1a | Ethernet13 | SERVER_DC1-LEAF1-SERVER2_Eth1 | False | - | - | - | - |
+| DC1-LEAF1-SERVER2 | Eth2 | dc1-leaf1b | Ethernet13 | SERVER_DC1-LEAF1-SERVER2_Eth2 | False | - | - | - | - |
+| DC1-LEAF1-SERVER3 | Eth1 | dc1-leaf1a | Ethernet15 | SERVER_DC1-LEAF1-SERVER3_Eth1 | False | - | - | - | - |
+| DC1-LEAF1-SERVER3 | Eth2 | dc1-leaf1a | Ethernet17 | SERVER_DC1-LEAF1-SERVER3_Eth2 | False | - | - | - | - |
+| DC1-LEAF1-SERVER3 | Eth3 | dc1-leaf1c | Ethernet11 | SERVER_DC1-LEAF1-SERVER3_Eth3 | False | - | - | - | - |

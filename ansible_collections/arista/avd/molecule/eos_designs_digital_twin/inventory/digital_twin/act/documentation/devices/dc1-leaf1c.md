@@ -4,6 +4,7 @@
 
 - [Management](#management)
   - [Management Interfaces](#management-interfaces)
+  - [NTP](#ntp)
   - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
   - [Enable Password](#enable-password)
@@ -51,6 +52,23 @@ interface Management1
    no shutdown
    vrf MGMT
    ip address 172.16.1.151/24
+```
+
+### NTP
+
+#### NTP Summary
+
+##### NTP Servers
+
+| Server | VRF | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
+| ------ | --- | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
+| ntp_server_for_virtual_nodes_only.ntp.org | - | - | - | - | - | - | - | - | - |
+
+#### NTP Device Configuration
+
+```eos
+!
+ntp server ntp_server_for_virtual_nodes_only.ntp.org
 ```
 
 ### Management API HTTP
@@ -119,7 +137,7 @@ vlan internal order ascending range 1006 1199
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet1 | L2_dc1-leaf1a_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet2 | L2_dc1-leaf1b_Ethernet8 | *trunk | *none | *- | *- | 1 |
-| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_iLO1 | - | - | - | - | - |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER3_Eth3 | - | - | - | - | - |
 | Ethernet31 | - | - | - | - | - | - |
 | Ethernet33 | - | - | - | - | - | - |
 
@@ -140,7 +158,7 @@ interface Ethernet2
    channel-group 1 mode active
 !
 interface Ethernet11
-   description SERVER_DC1-LEAF1-SERVER1_iLO1
+   description SERVER_DC1-LEAF1-SERVER3_Eth3
    no shutdown
    switchport
 !

@@ -52,10 +52,10 @@ ethernet_interfaces:
   peer_interface: Ethernet1
   peer_type: l2leaf
 - name: Ethernet11
-  description: SERVER_DC1-LEAF1-SERVER1_Eth0
+  description: SERVER_DC1-LEAF1-SERVER1_Eth1
   shutdown: false
   peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth0
+  peer_interface: Eth1
   peer_type: server
   switchport:
     enabled: true
@@ -63,18 +63,18 @@ ethernet_interfaces:
   description: EXCLUDED CONNECTED_ENDPOINT ADAPTER
   shutdown: false
   peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth2
+  peer_interface: Eth3
   peer_type: server
   switchport:
     enabled: true
 - name: Ethernet13
-  description: SERVER_DC1-LEAF1-SERVER1_Eth4
+  description: SERVER_DC1-LEAF1-SERVER2_Eth1
   shutdown: false
   channel_group:
     id: 13
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth4
+  peer: DC1-LEAF1-SERVER2
+  peer_interface: Eth1
   peer_type: server
 - name: Ethernet14
   description: EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
@@ -82,26 +82,26 @@ ethernet_interfaces:
   channel_group:
     id: 14
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth6
+  peer: DC1-LEAF1-SERVER2
+  peer_interface: Eth3
   peer_type: server
 - name: Ethernet15
-  description: SERVER_DC1-LEAF1-SERVER1_Eth8
+  description: SERVER_DC1-LEAF1-SERVER3_Eth1
   shutdown: false
   channel_group:
     id: 15
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth8
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth1
   peer_type: server
 - name: Ethernet17
-  description: SERVER_DC1-LEAF1-SERVER1_Eth9
+  description: SERVER_DC1-LEAF1-SERVER3_Eth2
   shutdown: false
   channel_group:
     id: 15
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth9
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth2
   peer_type: server
 - name: Ethernet16
   description: EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
@@ -109,8 +109,8 @@ ethernet_interfaces:
   channel_group:
     id: 16
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth10
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth3
   peer_type: server
 - name: Ethernet18
   description: EXCLUDED CONNECTED_ENDPOINT ADAPTER PO
@@ -118,14 +118,14 @@ ethernet_interfaces:
   channel_group:
     id: 16
     mode: active
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: Eth11
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth4
   peer_type: server
 - name: Ethernet20
   description: EXCLUDED CONNECTED_ENDPOINT
   shutdown: false
-  peer: DC1-LEAF1-SERVER2
-  peer_interface: Eth20
+  peer: DC1-LEAF1-SERVER4
+  peer_interface: Eth1
   peer_type: server
   switchport:
     enabled: true
@@ -135,8 +135,8 @@ ethernet_interfaces:
   channel_group:
     id: 22
     mode: active
-  peer: DC1-LEAF1-SERVER2
-  peer_interface: Eth22
+  peer: DC1-LEAF1-SERVER4
+  peer_interface: Eth3
   peer_type: server
 - name: Ethernet24
   description: EXCLUDED CONNECTED_ENDPOINT
@@ -144,8 +144,8 @@ ethernet_interfaces:
   channel_group:
     id: 24
     mode: active
-  peer: DC1-LEAF1-SERVER2
-  peer_interface: Eth24
+  peer: DC1-LEAF1-SERVER4
+  peer_interface: Eth5
   peer_type: server
 - name: Ethernet26
   description: EXCLUDED CONNECTED_ENDPOINT
@@ -153,8 +153,8 @@ ethernet_interfaces:
   channel_group:
     id: 24
     mode: active
-  peer: DC1-LEAF1-SERVER2
-  peer_interface: Eth25
+  peer: DC1-LEAF1-SERVER4
+  peer_interface: Eth6
   peer_type: server
 - name: Ethernet31
   shutdown: false
@@ -277,7 +277,7 @@ port_channel_interfaces:
     trunk:
       allowed_vlan: none
 - name: Port-Channel13
-  description: SERVER_DC1-LEAF1-SERVER1
+  description: SERVER_DC1-LEAF1-SERVER2
   shutdown: false
   mlag: 13
   switchport:
@@ -289,7 +289,7 @@ port_channel_interfaces:
   switchport:
     enabled: true
 - name: Port-Channel15
-  description: SERVER_DC1-LEAF1-SERVER1
+  description: SERVER_DC1-LEAF1-SERVER3
   shutdown: false
   switchport:
     enabled: true

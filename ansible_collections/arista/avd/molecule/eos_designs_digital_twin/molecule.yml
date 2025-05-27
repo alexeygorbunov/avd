@@ -27,7 +27,7 @@ provisioner:
     - --inventory
     - ${MOLECULE_SCENARIO_DIRECTORY}/inventory/hosts.yml
     - -e
-    - '{"digital_twin_mode": true, "fabric_name": "DIGITAL_TWIN"}'
+    - '{"digital_twin_mode": true, "eos_designs_documentation": {"connected_endpoints": true}, "fabric_name": "DIGITAL_TWIN"}'
     - --limit
     - DIGITAL_TWIN
 verifier:

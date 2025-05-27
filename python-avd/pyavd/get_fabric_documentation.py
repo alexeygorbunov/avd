@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pyavd._errors import AristaAvdInvalidInputsError
-from pyavd._utils import get
+from pyavd._utils import get, get_ip_from_pool, groupby
 from pyavd.api.fabric_documentation import FabricDocumentation
 
 if TYPE_CHECKING:
@@ -24,6 +24,7 @@ def get_fabric_documentation(
     p2p_links_csv: bool = False,
     toc: bool = True,
     digital_twin: bool = False,
+    digital_twin_global_config: dict | None = None,
 ) -> FabricDocumentation:
     """
     Build and return the AVD fabric documentation.
@@ -43,6 +44,7 @@ def get_fabric_documentation(
         p2p_links_csv: Returns P2P links CSV when set to True.
         toc: Skip TOC when set to False.
         digital_twin: Returns Digital Twin topology when set to True.
+        digital_twin_global_config: Digital Twin global configuration.
 
     Returns:
         FabricDocumentation object containing the requested documentation areas.
@@ -71,7 +73,9 @@ def get_fabric_documentation(
     if p2p_links_csv:
         result.p2p_links_csv = _get_p2p_links_csv(fabric_documentation_facts)
     if digital_twin:
-        result.digital_twin = _get_digital_twin(fabric_documentation_facts)
+        if digital_twin_global_config is None:
+            digital_twin_global_config = {}
+        result.digital_twin = _get_digital_twin(fabric_documentation_facts, digital_twin_global_config)
 
     return result
 
@@ -117,7 +121,15 @@ def _get_p2p_links_csv(fabric_documentation_facts: FabricDocumentationFacts) -> 
     return csv_content.read()
 
 
-def _get_digital_twin(fabric_documentation_facts: FabricDocumentationFacts) -> dict:
+def _get_digital_twin(fabric_documentation_facts: FabricDocumentationFacts, digital_twin_global_config: dict) -> dict:
+    match get(digital_twin_global_config, "environment"):
+        case "act":
+            return _get_digital_twin_act(fabric_documentation_facts, digital_twin_global_config)
+        case _:
+            return {}
+
+
+def _get_digital_twin_act(fabric_documentation_facts: FabricDocumentationFacts, digital_twin_global_config: dict) -> dict:
     digital_twin_topology = {}
     device_list = list(fabric_documentation_facts.avd_facts.keys())
 
@@ -152,32 +164,78 @@ def _get_digital_twin(fabric_documentation_facts: FabricDocumentationFacts) -> d
             "password": next(iter(digital_twin_fabric_password)),
         }
 
-    if device_list:
-        match next(iter(digital_twin_environment)):
-            case "act":
-                # Render nodes
-                digital_twin_topology["nodes"] = []
-                for device in sorted(device_list):
-                    digital_twin_topology["nodes"].append(
-                        {
-                            device: {
-                                "node_type": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.node_type"),
-                                "ip_addr": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.ip_addr"),
-                                "version": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.version"),
-                            }
+    connected_endpoint_ip_offset = 1
+    temp_endpoints = []
+    temp_endpoint_links = []
+    if (
+        fabric_documentation_facts.all_connected_endpoints_keys
+        and (endpoint_plarform := get(digital_twin_global_config, "platform.endpoints", None)) is not None
+        and endpoint_plarform not in digital_twin_topology
+    ):
+        digital_twin_topology[endpoint_plarform] = {
+            # TODO: Check and raise if required vars are not set in inputs
+            "username": get(digital_twin_global_config, "username.endpoints", None),
+            "password": get(digital_twin_global_config, "password.endpoints", None),
+            "version": get(digital_twin_global_config, "os_version.endpoints", None),
+        }
+        # TODO: Make sure creds are matching between fabric nodes and endpoints if save platform is used
+        connected_endpoint_mgmt_pool = get(digital_twin_global_config, "mgmt_ipv4_pool.endpoints")
+        _, connected_endpoint_mgmt_pref_len = connected_endpoint_mgmt_pool.split("/")
+        for connected_endpoint_values in fabric_documentation_facts.all_connected_endpoints.values():
+            for connected_endpoint_name, connected_endpoint_links in groupby(connected_endpoint_values, key="peer"):
+                temp_endpoints.append(
+                    {
+                        connected_endpoint_name: {
+                            "node_type": endpoint_plarform,
+                            "ip_addr": get_ip_from_pool(connected_endpoint_mgmt_pool, int(connected_endpoint_mgmt_pref_len), 0, connected_endpoint_ip_offset)
+                            + "/"
+                            + connected_endpoint_mgmt_pref_len,
+                            "version": get(digital_twin_global_config, "os_version.endpoints", None),
                         }
-                    )
-                # Render links
-                digital_twin_topology["links"] = []
-                digital_twin_topology["links"].extend(
+                    }
+                )
+                connected_endpoint_ip_offset += 1
+                temp_endpoint_links.extend(
                     [
                         {
                             "connection": [
-                                topology_link["node"] + ":" + topology_link["node_interface"],
-                                topology_link["peer"] + ":" + topology_link["peer_interface"],
+                                get(link, "fabric_switch") + ":" + get(link, "fabric_port"),
+                                get(link, "peer") + ":" + get(link, "peer_interface"),
                             ]
                         }
-                        for topology_link in fabric_documentation_facts.topology_links
+                        for link in connected_endpoint_links
                     ]
                 )
+
+    if device_list:
+        # Render nodes
+        digital_twin_topology["nodes"] = []
+        for device in sorted(device_list):
+            digital_twin_topology["nodes"].append(
+                {
+                    device: {
+                        "node_type": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.node_type"),
+                        "ip_addr": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.ip_addr"),
+                        "version": get(fabric_documentation_facts.structured_configs, f"{device}.metadata.digital_twin.version"),
+                    }
+                }
+            )
+        if temp_endpoints:
+            digital_twin_topology["nodes"].extend(temp_endpoints)
+        # Render links
+        digital_twin_topology["links"] = []
+        digital_twin_topology["links"].extend(
+            [
+                {
+                    "connection": [
+                        topology_link["node"] + ":" + topology_link["node_interface"],
+                        topology_link["peer"] + ":" + topology_link["peer_interface"],
+                    ]
+                }
+                for topology_link in fabric_documentation_facts.topology_links
+            ]
+        )
+        if temp_endpoint_links:
+            digital_twin_topology["links"].extend(temp_endpoint_links)
+
     return dict(digital_twin_topology)

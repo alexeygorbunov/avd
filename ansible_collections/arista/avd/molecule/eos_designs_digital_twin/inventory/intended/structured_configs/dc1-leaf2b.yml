@@ -52,21 +52,21 @@ ethernet_interfaces:
   peer_interface: Ethernet2
   peer_type: l2leaf
 - name: Ethernet12
-  description: SERVER_DC1-LEAF2-SERVER1_Eth1
+  description: SERVER_DC1-LEAF2-SERVER1_Eth2
   shutdown: false
   peer: DC1-LEAF2-SERVER1
-  peer_interface: Eth1
+  peer_interface: Eth2
   peer_type: server
   switchport:
     enabled: true
 - name: Ethernet14
-  description: SERVER_DC1-LEAF2-SERVER1_Eth3
+  description: SERVER_DC1-LEAF2-SERVER1_Eth4
   shutdown: false
   channel_group:
     id: 14
     mode: active
   peer: DC1-LEAF2-SERVER1
-  peer_interface: Eth3
+  peer_interface: Eth4
   peer_type: server
 - name: Ethernet32
   shutdown: false

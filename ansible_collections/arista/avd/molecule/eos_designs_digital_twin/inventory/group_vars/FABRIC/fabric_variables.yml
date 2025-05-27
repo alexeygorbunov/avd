@@ -10,14 +10,31 @@ custom_structured_configuration_prefix:
   - 'custom_structured_configuration_'
   - 'hw_custom_structured_configuration_'
 
+digital_twin_custom_structured_configuration_prefix:
+  - 'custom_structured_configuration_'
+  - 'digital_twin_custom_structured_configuration_'
+
 custom_structured_configuration_prompt: "virtual_friendly_prompt"
+
 hw_custom_structured_configuration_terminal:
   length: 100
   width: 100
 
+digital_twin_custom_structured_configuration_ntp:
+  servers:
+    - name: ntp_server_for_virtual_nodes_only.ntp.org
+
 digital_twin:
   environment: act
+  platform:
+    endpoints: generic
+  os_version:
+    endpoints: ubuntu-2404-lts-amd64
+  mgmt_ipv4_pool:
+    endpoints: 10.10.10.0/24
   username:
     fabric: act_user
+    endpoints: act_endpoint_user
   password:
     fabric: act_pass
+    endpoints: act_endpoint_password

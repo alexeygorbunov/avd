@@ -218,9 +218,9 @@ vlan 4094
 | Ethernet8 | L2_dc1-leaf1c_Ethernet2 | *trunk | *none | *- | *- | 8 |
 | Ethernet9 | MLAG_dc1-leaf1a_Ethernet9 | *trunk | *- | *- | *MLAG | 9 |
 | Ethernet10 | MLAG_dc1-leaf1a_Ethernet10 | *trunk | *- | *- | *MLAG | 9 |
-| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth1 | - | - | - | - | - |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_Eth2 | - | - | - | - | - |
 | Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
-| Ethernet13 | SERVER_DC1-LEAF1-SERVER1_Eth5 | *- | *- | *- | *- | 13 |
+| Ethernet13 | SERVER_DC1-LEAF1-SERVER2_Eth2 | *- | *- | *- | *- | 13 |
 | Ethernet14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | *- | *- | *- | *- | 14 |
 | Ethernet20 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
 | Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | *- | *- | *- | *- | 22 |
@@ -274,7 +274,7 @@ interface Ethernet10
    channel-group 9 mode active
 !
 interface Ethernet11
-   description SERVER_DC1-LEAF1-SERVER1_Eth1
+   description SERVER_DC1-LEAF1-SERVER1_Eth2
    no shutdown
    switchport
 !
@@ -284,7 +284,7 @@ interface Ethernet12
    switchport
 !
 interface Ethernet13
-   description SERVER_DC1-LEAF1-SERVER1_Eth5
+   description SERVER_DC1-LEAF1-SERVER2_Eth2
    no shutdown
    channel-group 13 mode active
 !
@@ -341,7 +341,7 @@ interface Ethernet36
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | none | - | - | - | - | 8 | - |
 | Port-Channel9 | MLAG_dc1-leaf1a_Port-Channel9 | trunk | - | - | MLAG | - | - | - | - |
-| Port-Channel13 | SERVER_DC1-LEAF1-SERVER1 | - | - | - | - | - | - | 13 | - |
+| Port-Channel13 | SERVER_DC1-LEAF1-SERVER2 | - | - | - | - | - | - | 13 | - |
 | Port-Channel14 | EXCLUDED CONNECTED_ENDPOINT ADAPTER PO | - | - | - | - | - | - | 14 | - |
 | Port-Channel22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - | - | 22 | - |
 | Port-Channel35 | - | - | - | - | - | - | - | 35 | - |
@@ -367,7 +367,7 @@ interface Port-Channel9
    switchport
 !
 interface Port-Channel13
-   description SERVER_DC1-LEAF1-SERVER1
+   description SERVER_DC1-LEAF1-SERVER2
    no shutdown
    switchport
    mlag 13

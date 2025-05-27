@@ -23,13 +23,13 @@ ethernet_interfaces:
   peer_interface: Ethernet8
   peer_type: l3leaf
 - name: Ethernet11
-  description: SERVER_DC1-LEAF1-SERVER1_iLO1
+  description: SERVER_DC1-LEAF1-SERVER3_Eth5
   shutdown: false
   poe:
     reboot:
       action: maintain
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: iLO1
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth5
   peer_type: server
   switchport:
     enabled: true
@@ -39,8 +39,8 @@ ethernet_interfaces:
   poe:
     reboot:
       action: maintain
-  peer: DC1-LEAF1-SERVER1
-  peer_interface: iLO2
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: iLO
   peer_type: server
   switchport:
     enabled: true
@@ -50,8 +50,8 @@ ethernet_interfaces:
   poe:
     reboot:
       action: maintain
-  peer: DC1-LEAF1-SERVER2
-  peer_interface: iLO1
+  peer: DC1-LEAF1-SERVER4
+  peer_interface: iLO
   peer_type: server
   switchport:
     enabled: true

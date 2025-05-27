@@ -121,7 +121,7 @@ vlan internal order ascending range 1006 1199
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet1 | L2_dc1-leaf1a_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet2 | L2_dc1-leaf1b_Ethernet8 | *trunk | *none | *- | *- | 1 |
-| Ethernet11 | SERVER_DC1-LEAF1-SERVER1_iLO1 | - | - | - | - | - |
+| Ethernet11 | SERVER_DC1-LEAF1-SERVER3_Eth5 | - | - | - | - | - |
 | Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
 | Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
 | Ethernet31 | - | - | - | - | - | - |
@@ -146,7 +146,7 @@ interface Ethernet2
    channel-group 1 mode active
 !
 interface Ethernet11
-   description SERVER_DC1-LEAF1-SERVER1_iLO1
+   description SERVER_DC1-LEAF1-SERVER3_Eth5
    no shutdown
    switchport
    poe reboot action maintain

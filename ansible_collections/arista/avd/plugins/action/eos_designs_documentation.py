@@ -86,6 +86,7 @@ class ActionModule(ActionBase):
             structured_config_suffix=validated_args["structured_config_suffix"],
         )
         fabric_name = get(task_vars, "fabric_name", required=True)
+        digital_twin_global_config = get(task_vars, "digital_twin", {})
         output = get_fabric_documentation(
             avd_facts=all_facts,
             structured_configs=structured_configs,
@@ -96,6 +97,7 @@ class ActionModule(ActionBase):
             p2p_links_csv=validated_args["p2p_links_csv"],
             toc=validated_args["toc"],
             digital_twin=validated_args["digital_twin"],
+            digital_twin_global_config=digital_twin_global_config,
         )
         if output.fabric_documentation:
             result["changed"] = write_file(

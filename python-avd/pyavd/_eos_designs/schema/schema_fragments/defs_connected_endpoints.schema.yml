@@ -22,9 +22,20 @@ $defs:
           type: str
           description: Rack is used for documentation purposes only.
         digital_twin:
-          type: bool
-          description: Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology.
-          default: true
+          type: dict
+          keys:
+            enabled:
+              type: bool
+              description: Setting this flag to `false` will exclude the endpoint and all associated adapters from the generated Digital Twin topology.
+              default: true
+            generate_ports:
+              type: bool
+              description: |-
+                Setting this flag to `true` will force all port names of the associated endpoint to be renamed based on the `EthX` pattern.
+                This may be required in cases where Digital Twin environment enforces specific port naming convention. For example - ACT only supporting
+                `Eth.*|Ma.*` patterns. Attempt to generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation of
+                the invalid topology file.
+              default: false
         adapters:
           type: list
           description: A list of adapters, group by adapters leveraging the same port-profile.
