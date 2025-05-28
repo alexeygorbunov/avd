@@ -1,5 +1,10 @@
 ---
 
+port_profiles:
+  - profile: base_access_portfast
+    mode: access
+    spanning_tree_portfast: edge
+
 network_ports:
   # All even ports between 30 and 40 are excluded from Digital Twin topology
   # Standalone interfaces to stay
@@ -66,6 +71,7 @@ network_ports:
     switch_ports:
       - Ethernet31
       - Ethernet33
+    profile: base_access_portfast
     poe:
       reboot:
         action: maintain

@@ -7,7 +7,7 @@ ethernet_interfaces:
 - name: Ethernet1
   description: P2P_dc1-leaf1a_Ethernet2
   shutdown: false
-  mtu: 9214
+  mtu: 9194
   ip_address: 10.255.255.2/31
   peer: dc1-leaf1a
   peer_interface: Ethernet2
@@ -17,7 +17,7 @@ ethernet_interfaces:
 - name: Ethernet2
   description: P2P_dc1-leaf1b_Ethernet2
   shutdown: false
-  mtu: 9214
+  mtu: 9194
   ip_address: 10.255.255.6/31
   peer: dc1-leaf1b
   peer_interface: Ethernet2
@@ -44,11 +44,11 @@ management_interfaces:
   ip_address: 172.16.1.12/24
   type: oob
 metadata:
-  platform: veos
+  platform: CloudEOS
   fabric_name: DIGITAL_TWIN
   digital_twin:
     environment: act
-    node_type: veos
+    node_type: cloudeos
     ip_addr: 172.16.1.202/24
     version: 4.33.1.1F
     username: act_user

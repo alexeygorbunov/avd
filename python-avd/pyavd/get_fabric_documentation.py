@@ -57,7 +57,14 @@ def get_fabric_documentation(
     from .templater import Templar
     # pylint: enable=import-outside-toplevel
 
-    fabric_documentation_facts = FabricDocumentationFacts(avd_facts, structured_configs, fabric_name, include_connected_endpoints, toc)
+    _endpoints_in_digital_twin_topology = bool(digital_twin and get(digital_twin_global_config, "endpoints.enabled", False))
+    fabric_documentation_facts = FabricDocumentationFacts(
+        avd_facts, structured_configs,
+        fabric_name,
+        include_connected_endpoints,
+        toc,
+        _endpoints_in_digital_twin_topology,
+        )
     result = FabricDocumentation()
     doc_templar = Templar(precompiled_templates_path=EOS_DESIGNS_JINJA2_PRECOMPILED_TEMPLATE_PATH)
     if fabric_documentation:
@@ -169,17 +176,17 @@ def _get_digital_twin_act(fabric_documentation_facts: FabricDocumentationFacts, 
     temp_endpoint_links = []
     if (
         fabric_documentation_facts.all_connected_endpoints_keys
-        and (endpoint_plarform := get(digital_twin_global_config, "platform.endpoints", None)) is not None
+        and (endpoint_plarform := get(digital_twin_global_config, "endpoints.platform", None)) is not None
         and endpoint_plarform not in digital_twin_topology
     ):
         digital_twin_topology[endpoint_plarform] = {
             # TODO: Check and raise if required vars are not set in inputs
-            "username": get(digital_twin_global_config, "username.endpoints", None),
-            "password": get(digital_twin_global_config, "password.endpoints", None),
-            "version": get(digital_twin_global_config, "os_version.endpoints", None),
+            "username": get(digital_twin_global_config, "endpoints.username", None),
+            "password": get(digital_twin_global_config, "endpoints.password", None),
+            "version": get(digital_twin_global_config, "endpoints.os_version", None),
         }
         # TODO: Make sure creds are matching between fabric nodes and endpoints if save platform is used
-        connected_endpoint_mgmt_pool = get(digital_twin_global_config, "mgmt_ipv4_pool.endpoints")
+        connected_endpoint_mgmt_pool = get(digital_twin_global_config, "endpoints.mgmt_ipv4_pool")
         _, connected_endpoint_mgmt_pref_len = connected_endpoint_mgmt_pool.split("/")
         for connected_endpoint_values in fabric_documentation_facts.all_connected_endpoints.values():
             for connected_endpoint_name, connected_endpoint_links in groupby(connected_endpoint_values, key="peer"):
@@ -190,7 +197,7 @@ def _get_digital_twin_act(fabric_documentation_facts: FabricDocumentationFacts, 
                             "ip_addr": get_ip_from_pool(connected_endpoint_mgmt_pool, int(connected_endpoint_mgmt_pref_len), 0, connected_endpoint_ip_offset)
                             + "/"
                             + connected_endpoint_mgmt_pref_len,
-                            "version": get(digital_twin_global_config, "os_version.endpoints", None),
+                            "version": get(digital_twin_global_config, "endpoints.os_version", None),
                         }
                     }
                 )

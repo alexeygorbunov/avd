@@ -7,7 +7,6 @@ l2leaf:
     platform: 720XP
     digital_twin:
       os_version: "4.33.2F"
-      platform: cloudeos
 
   node_groups:
     - group: DC1_L2_LEAF1

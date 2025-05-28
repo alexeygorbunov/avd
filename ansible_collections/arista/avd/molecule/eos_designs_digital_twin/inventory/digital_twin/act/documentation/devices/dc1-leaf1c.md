@@ -138,8 +138,8 @@ vlan internal order ascending range 1006 1199
 | Ethernet1 | L2_dc1-leaf1a_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet2 | L2_dc1-leaf1b_Ethernet8 | *trunk | *none | *- | *- | 1 |
 | Ethernet11 | SERVER_DC1-LEAF1-SERVER3_Eth3 | - | - | - | - | - |
-| Ethernet31 | - | - | - | - | - | - |
-| Ethernet33 | - | - | - | - | - | - |
+| Ethernet31 | - | access | - | - | - | - |
+| Ethernet33 | - | access | - | - | - | - |
 
 *Inherited from Port-Channel Interface
 
@@ -164,11 +164,15 @@ interface Ethernet11
 !
 interface Ethernet31
    no shutdown
+   switchport mode access
    switchport
+   spanning-tree portfast
 !
 interface Ethernet33
    no shutdown
+   switchport mode access
    switchport
+   spanning-tree portfast
 ```
 
 ### Port-Channel Interfaces

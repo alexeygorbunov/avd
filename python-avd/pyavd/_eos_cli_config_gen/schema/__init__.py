@@ -22534,6 +22534,7 @@ class EosCliConfigGen(EosCliConfigGenRootModel):
                 "password": {"type": str},
             }
             environment: str | None
+            """Targeted Digital Twin environment (ACT, etc.)."""
             node_type: str | None
             ip_addr: str | None
             """IPv4_address/Mask."""
@@ -22560,7 +22561,7 @@ class EosCliConfigGen(EosCliConfigGenRootModel):
                     Subclass of AvdModel.
 
                     Args:
-                        environment: environment
+                        environment: Targeted Digital Twin environment (ACT, etc.).
                         node_type: node_type
                         ip_addr: IPv4_address/Mask.
                         version: version
@@ -22595,7 +22596,11 @@ class EosCliConfigGen(EosCliConfigGenRootModel):
         Subclass of AvdModel.
         """
         digital_twin: DigitalTwin
-        """Subclass of AvdModel."""
+        """
+        Metadata used to generate Digital Twin topology.
+
+        Subclass of AvdModel.
+        """
 
         if TYPE_CHECKING:
 
@@ -22630,7 +22635,10 @@ class EosCliConfigGen(EosCliConfigGenRootModel):
                        Metadata used for CV Pathfinder visualization on CloudVision.
 
                        Subclass of AvdModel.
-                    digital_twin: Subclass of AvdModel.
+                    digital_twin:
+                       Metadata used to generate Digital Twin topology.
+
+                       Subclass of AvdModel.
 
                 """
 

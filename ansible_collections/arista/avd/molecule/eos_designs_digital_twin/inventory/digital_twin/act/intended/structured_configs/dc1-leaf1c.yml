@@ -32,14 +32,20 @@ ethernet_interfaces:
     enabled: true
 - name: Ethernet31
   shutdown: false
+  spanning_tree_portfast: edge
   peer_type: network_port
+  port_profile: base_access_portfast
   switchport:
     enabled: true
+    mode: access
 - name: Ethernet33
   shutdown: false
+  spanning_tree_portfast: edge
   peer_type: network_port
+  port_profile: base_access_portfast
   switchport:
     enabled: true
+    mode: access
 hostname: dc1-leaf1c
 ip_igmp_snooping:
   globally_enabled: true
@@ -56,11 +62,11 @@ management_interfaces:
   ip_address: 172.16.1.151/24
   type: oob
 metadata:
-  platform: cloudeos
+  platform: vEOS
   fabric_name: DIGITAL_TWIN
   digital_twin:
     environment: act
-    node_type: cloudeos
+    node_type: veos
     ip_addr: 172.16.1.151/24
     version: 4.33.2F
     username: act_user

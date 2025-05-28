@@ -60,17 +60,23 @@ ethernet_interfaces:
   poe:
     reboot:
       action: maintain
+  spanning_tree_portfast: edge
   peer_type: network_port
+  port_profile: base_access_portfast
   switchport:
     enabled: true
+    mode: access
 - name: Ethernet33
   shutdown: false
   poe:
     reboot:
       action: maintain
+  spanning_tree_portfast: edge
   peer_type: network_port
+  port_profile: base_access_portfast
   switchport:
     enabled: true
+    mode: access
 - name: Ethernet32
   description: EXCLUDED NETWORK_PORT
   shutdown: false

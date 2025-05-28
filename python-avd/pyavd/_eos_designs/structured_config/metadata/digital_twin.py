@@ -5,7 +5,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
-from pyavd._utils import default
+from pyavd._errors import AristaAvdInvalidInputsError
+from pyavd._utils import default, get_v2
+from logging import Logger
+
+LOGGER = Logger(__name__)
 
 if TYPE_CHECKING:
     from . import AvdStructuredConfigMetadataProtocol
@@ -24,11 +28,16 @@ class DigitalTwinMixin(Protocol):
 
         Only relevant to the use cases where generation of the Digital Twin infrastructure is globally enabled.
         """
-        self.structured_config.metadata.digital_twin._update(
-            environment=self.inputs.digital_twin.environment,
-            node_type=default(self.shared_utils.node_config.digital_twin.platform, self.inputs.digital_twin.platform.fabric, self.shared_utils.platform),
-            ip_addr=default(self.shared_utils.node_config.digital_twin.mgmt_ip, self.shared_utils.node_config.mgmt_ip),
-            version=default(self.shared_utils.node_config.digital_twin.os_version, self.inputs.digital_twin.os_version.fabric),
-            username=default(self.inputs.digital_twin.username.fabric),
-            password=default(self.inputs.digital_twin.password.fabric),
-        )
+        environment=self.inputs.digital_twin.environment
+        if digital_twin_node_type:=get_v2(self.shared_utils.platform_settings.digital_twin.digital_twin_platform, environment):
+            self.structured_config.metadata.digital_twin._update(
+                environment=environment,
+                node_type=digital_twin_node_type,
+                ip_addr=default(self.shared_utils.node_config.digital_twin.mgmt_ip, self.shared_utils.node_config.mgmt_ip),
+                version=default(self.shared_utils.node_config.digital_twin.os_version, self.inputs.digital_twin.fabric.os_version),
+                username=default(self.inputs.digital_twin.fabric.username),
+                password=default(self.inputs.digital_twin.fabric.password),
+            )
+            return
+        msg = f"'digital_twin.digital_twin_platform.{environment}' key must be set in 'platform_settings' item used by platform '{self.shared_utils.platform}'."
+        raise AristaAvdInvalidInputsError(msg)

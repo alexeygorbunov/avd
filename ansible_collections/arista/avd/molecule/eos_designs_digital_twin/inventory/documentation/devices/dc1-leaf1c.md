@@ -124,9 +124,9 @@ vlan internal order ascending range 1006 1199
 | Ethernet11 | SERVER_DC1-LEAF1-SERVER3_Eth5 | - | - | - | - | - |
 | Ethernet12 | EXCLUDED CONNECTED_ENDPOINT ADAPTER | - | - | - | - | - |
 | Ethernet22 | EXCLUDED CONNECTED_ENDPOINT | - | - | - | - | - |
-| Ethernet31 | - | - | - | - | - | - |
+| Ethernet31 | - | access | - | - | - | - |
 | Ethernet32 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
-| Ethernet33 | - | - | - | - | - | - |
+| Ethernet33 | - | access | - | - | - | - |
 | Ethernet34 | EXCLUDED NETWORK_PORT | - | - | - | - | - |
 
 *Inherited from Port-Channel Interface
@@ -165,8 +165,10 @@ interface Ethernet22
 !
 interface Ethernet31
    no shutdown
+   switchport mode access
    switchport
    poe reboot action maintain
+   spanning-tree portfast
 !
 interface Ethernet32
    description EXCLUDED NETWORK_PORT
@@ -176,8 +178,10 @@ interface Ethernet32
 !
 interface Ethernet33
    no shutdown
+   switchport mode access
    switchport
    poe reboot action maintain
+   spanning-tree portfast
 !
 interface Ethernet34
    description EXCLUDED NETWORK_PORT

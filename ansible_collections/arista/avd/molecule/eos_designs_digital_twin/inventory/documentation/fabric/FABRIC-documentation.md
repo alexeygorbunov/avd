@@ -24,7 +24,7 @@
 | FABRIC | l3leaf | dc1-leaf2b | 172.16.1.104/24 | 7280R2 | Provisioned | - |
 | FABRIC | l2leaf | dc1-leaf2c | 172.16.1.152/24 | 720XP | Provisioned | - |
 | FABRIC | spine | dc1-spine1 | 172.16.1.11/24 | 7280R2 | Provisioned | - |
-| FABRIC | spine | dc1-spine2 | 172.16.1.12/24 | 7280R2 | Provisioned | - |
+| FABRIC | spine | dc1-spine2 | 172.16.1.12/24 | CUSTOM-PLATFORM | Provisioned | - |
 
 > Provision status is based on Ansible inventory declaration and do not represent real status from CloudVision.
 

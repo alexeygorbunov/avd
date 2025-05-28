@@ -24,17 +24,26 @@ digital_twin_custom_structured_configuration_ntp:
   servers:
     - name: ntp_server_for_virtual_nodes_only.ntp.org
 
+custom_platform_settings:
+  - platforms:
+      - CUSTOM-PLATFORM
+    lag_hardware_only: true
+    reload_delay:
+      mlag: 900
+      non_mlag: 1020
+    tcam_profile: vxlan-routing
+    digital_twin:
+      casted_avd_platform: CloudEOS
+
 digital_twin:
   environment: act
-  platform:
-    endpoints: generic
-  os_version:
-    endpoints: ubuntu-2404-lts-amd64
-  mgmt_ipv4_pool:
-    endpoints: 10.10.10.0/24
-  username:
-    fabric: act_user
-    endpoints: act_endpoint_user
-  password:
-    fabric: act_pass
-    endpoints: act_endpoint_password
+  fabric:
+    username: act_user
+    password: act_pass
+  endpoints:
+    enabled: true
+    platform: generic
+    os_version: ubuntu-2404-lts-amd64
+    mgmt_ipv4_pool: 10.10.10.0/24
+    username: act_endpoint_user
+    password: act_endpoint_password

@@ -67,7 +67,7 @@ class UtilsMixin(Protocol):
                         if not adapter.digital_twin:
                             continue
                         # Generate new port names
-                        if connected_endpoint.digital_twin.generate_ports:
+                        if connected_endpoint.digital_twin.generate_port_names:
                             new_port_names = []
                             for _ in adapter.endpoint_ports:
                                 new_port_names.append(f"Eth{endpoint_port_index}")

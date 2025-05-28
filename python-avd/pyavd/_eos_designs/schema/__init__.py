@@ -2695,196 +2695,143 @@ class EosDesigns(EosDesignsRootModel):
     class DigitalTwin(AvdModel):
         """Subclass of AvdModel."""
 
-        class Platform(AvdModel):
+        class Fabric(AvdModel):
             """Subclass of AvdModel."""
 
-            _fields: ClassVar[dict] = {"fabric": {"type": str, "default": "veos"}, "endpoints": {"type": str, "default": "veos"}}
-            fabric: Literal["veos", "cloudeos"]
+            _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ipv4_pool": {"type": str}, "username": {"type": str}, "password": {"type": str}}
+            os_version: str | None
+            """Desired Digital Twin OS version for fabric nodes."""
+            mgmt_ipv4_pool: str | None
             """
-            Desired virtual platform for Fabric nodes.
-            Available option for ACT:
-              - veos
-              - cloudeos
-
-            Default value: `"veos"`
+            IPv4 address pool to automatically generate MGMT IPv4 addresses for digital twins of the Fabric
+            nodes.
+            Comma separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
             """
-            endpoints: Literal["veos", "cloudeos", "generic"]
-            """
-            Desired virtual platform for Endpoints.
-            Available option for act:
-              - veos
-              - cloudeos
-              - generic
-            (Ubuntu Linux)
-
-            Default value: `"veos"`
-            """
+            username: str | None
+            """Desired Digital Twin username for fabric nodes."""
+            password: str | None
+            """Desired Digital Twin clear-text password for fabric nodes."""
 
             if TYPE_CHECKING:
 
                 def __init__(
                     self,
                     *,
-                    fabric: Literal["veos", "cloudeos"] | UndefinedType = Undefined,
-                    endpoints: Literal["veos", "cloudeos", "generic"] | UndefinedType = Undefined,
+                    os_version: str | None | UndefinedType = Undefined,
+                    mgmt_ipv4_pool: str | None | UndefinedType = Undefined,
+                    username: str | None | UndefinedType = Undefined,
+                    password: str | None | UndefinedType = Undefined,
                 ) -> None:
                     """
-                    Platform.
+                    Fabric.
 
 
                     Subclass of AvdModel.
 
                     Args:
-                        fabric:
-                           Desired virtual platform for Fabric nodes.
-                           Available option for ACT:
-                             - veos
-                             - cloudeos
-                        endpoints:
-                           Desired virtual platform for Endpoints.
-                           Available option for act:
-                             - veos
-                             - cloudeos
-                             - generic
-                           (Ubuntu Linux)
+                        os_version: Desired Digital Twin OS version for fabric nodes.
+                        mgmt_ipv4_pool:
+                           IPv4 address pool to automatically generate MGMT IPv4 addresses for digital twins of the Fabric
+                           nodes.
+                           Comma separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
+                        username: Desired Digital Twin username for fabric nodes.
+                        password: Desired Digital Twin clear-text password for fabric nodes.
 
                     """
 
-        class OsVersion(AvdModel):
+        class Endpoints(AvdModel):
             """Subclass of AvdModel."""
 
-            _fields: ClassVar[dict] = {"fabric": {"type": str}, "endpoints": {"type": str}}
-            fabric: str | None
-            """Desired OS version for Fabric nodes."""
-            endpoints: str | None
-            """Desired OS version for Endpoints."""
+            _fields: ClassVar[dict] = {
+                "enabled": {"type": bool, "default": False},
+                "platform": {"type": str, "default": "generic"},
+                "os_version": {"type": str},
+                "mgmt_ipv4_pool": {"type": str},
+                "username": {"type": str},
+                "password": {"type": str},
+            }
+            enabled: bool
+            """
+            Setting this flag to `true` will include all `connected_endpoints` in the generated Digital Twin
+            topology data.
+            Specific ednpoints may be suppressed by setiing
+            `<connected_endpoints_keys.key>.digital_twin.enabled` to `false`.
+
+            Default value: `False`
+            """
+            platform: Literal["veos", "cloudeos", "generic"]
+            """
+            Desired Digital Twin virtual platform for endpoints.
+
+            Default value: `"generic"`
+            """
+            os_version: str | None
+            """Desired Digital Twin OS version for endpoints."""
+            mgmt_ipv4_pool: str | None
+            """
+            IPv4 address pool to automatically generate MGMT IPv4 addresses for Digital Twin endpoints.
+            Comma
+            separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
+            """
+            username: str | None
+            """Desired Digital Twin username for endpoints."""
+            password: str | None
+            """Desired Digital Twin clear-text password for endpoints."""
 
             if TYPE_CHECKING:
 
-                def __init__(self, *, fabric: str | None | UndefinedType = Undefined, endpoints: str | None | UndefinedType = Undefined) -> None:
+                def __init__(
+                    self,
+                    *,
+                    enabled: bool | UndefinedType = Undefined,
+                    platform: Literal["veos", "cloudeos", "generic"] | UndefinedType = Undefined,
+                    os_version: str | None | UndefinedType = Undefined,
+                    mgmt_ipv4_pool: str | None | UndefinedType = Undefined,
+                    username: str | None | UndefinedType = Undefined,
+                    password: str | None | UndefinedType = Undefined,
+                ) -> None:
                     """
-                    OsVersion.
+                    Endpoints.
 
 
                     Subclass of AvdModel.
 
                     Args:
-                        fabric: Desired OS version for Fabric nodes.
-                        endpoints: Desired OS version for Endpoints.
+                        enabled:
+                           Setting this flag to `true` will include all `connected_endpoints` in the generated Digital Twin
+                           topology data.
+                           Specific ednpoints may be suppressed by setiing
+                           `<connected_endpoints_keys.key>.digital_twin.enabled` to `false`.
+                        platform: Desired Digital Twin virtual platform for endpoints.
+                        os_version: Desired Digital Twin OS version for endpoints.
+                        mgmt_ipv4_pool:
+                           IPv4 address pool to automatically generate MGMT IPv4 addresses for Digital Twin endpoints.
+                           Comma
+                           separated list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
+                        username: Desired Digital Twin username for endpoints.
+                        password: Desired Digital Twin clear-text password for endpoints.
 
                     """
 
-        class MgmtIpv4Pool(AvdModel):
-            """Subclass of AvdModel."""
-
-            _fields: ClassVar[dict] = {"fabric": {"type": str}, "endpoints": {"type": str}}
-            fabric: str | None
-            """
-            IPv4 address pool to automatically generate MGMT IPv4 addreesses for Fabric nodes.
-            Comma separated
-            list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
-            """
-            endpoints: str | None
-            """
-            IPv4 address pool to automatically generate MGMT IPv4 addreesses for Endpoints.
-            Comma separated list
-            of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
-            """
-
-            if TYPE_CHECKING:
-
-                def __init__(self, *, fabric: str | None | UndefinedType = Undefined, endpoints: str | None | UndefinedType = Undefined) -> None:
-                    """
-                    MgmtIpv4Pool.
-
-
-                    Subclass of AvdModel.
-
-                    Args:
-                        fabric:
-                           IPv4 address pool to automatically generate MGMT IPv4 addreesses for Fabric nodes.
-                           Comma separated
-                           list of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
-                        endpoints:
-                           IPv4 address pool to automatically generate MGMT IPv4 addreesses for Endpoints.
-                           Comma separated list
-                           of prefixes (IPv4 address/Mask) or ranges (IPv4_address-IPv4_address).
-
-                    """
-
-        class Username(AvdModel):
-            """Subclass of AvdModel."""
-
-            _fields: ClassVar[dict] = {"fabric": {"type": str}, "endpoints": {"type": str}}
-            fabric: str | None
-            """Username for Fabric nodes."""
-            endpoints: str | None
-            """Username for Endpoints."""
-
-            if TYPE_CHECKING:
-
-                def __init__(self, *, fabric: str | None | UndefinedType = Undefined, endpoints: str | None | UndefinedType = Undefined) -> None:
-                    """
-                    Username.
-
-
-                    Subclass of AvdModel.
-
-                    Args:
-                        fabric: Username for Fabric nodes.
-                        endpoints: Username for Endpoints.
-
-                    """
-
-        class Password(AvdModel):
-            """Subclass of AvdModel."""
-
-            _fields: ClassVar[dict] = {"fabric": {"type": str}, "endpoints": {"type": str}}
-            fabric: str | None
-            """Password for Fabric nodes."""
-            endpoints: str | None
-            """Password for Endpoints."""
-
-            if TYPE_CHECKING:
-
-                def __init__(self, *, fabric: str | None | UndefinedType = Undefined, endpoints: str | None | UndefinedType = Undefined) -> None:
-                    """
-                    Password.
-
-
-                    Subclass of AvdModel.
-
-                    Args:
-                        fabric: Password for Fabric nodes.
-                        endpoints: Password for Endpoints.
-
-                    """
-
-        _fields: ClassVar[dict] = {
-            "environment": {"type": str, "default": "act"},
-            "platform": {"type": Platform},
-            "os_version": {"type": OsVersion},
-            "mgmt_ipv4_pool": {"type": MgmtIpv4Pool},
-            "username": {"type": Username},
-            "password": {"type": Password},
-        }
+        _fields: ClassVar[dict] = {"environment": {"type": str, "default": "act"}, "fabric": {"type": Fabric}, "endpoints": {"type": Endpoints}}
         environment: Literal["act"]
         """
-        Targeted Digital Twin environment. Available options:
-          - act
+        Targeted Digital Twin environment.
 
         Default value: `"act"`
         """
-        platform: Platform
-        """Subclass of AvdModel."""
-        os_version: OsVersion
-        """Subclass of AvdModel."""
-        mgmt_ipv4_pool: MgmtIpv4Pool
-        """Subclass of AvdModel."""
-        username: Username
-        """Subclass of AvdModel."""
-        password: Password
-        """Subclass of AvdModel."""
+        fabric: Fabric
+        """
+        Global Digital Twin settings related to the configuration of fabric nodes.
+
+        Subclass of AvdModel.
+        """
+        endpoints: Endpoints
+        """
+        Global Digital Twin settings related to the configuration of the endpoints.
+
+        Subclass of AvdModel.
+        """
 
         if TYPE_CHECKING:
 
@@ -2892,11 +2839,8 @@ class EosDesigns(EosDesignsRootModel):
                 self,
                 *,
                 environment: Literal["act"] | UndefinedType = Undefined,
-                platform: Platform | UndefinedType = Undefined,
-                os_version: OsVersion | UndefinedType = Undefined,
-                mgmt_ipv4_pool: MgmtIpv4Pool | UndefinedType = Undefined,
-                username: Username | UndefinedType = Undefined,
-                password: Password | UndefinedType = Undefined,
+                fabric: Fabric | UndefinedType = Undefined,
+                endpoints: Endpoints | UndefinedType = Undefined,
             ) -> None:
                 """
                 DigitalTwin.
@@ -2905,14 +2849,15 @@ class EosDesigns(EosDesignsRootModel):
                 Subclass of AvdModel.
 
                 Args:
-                    environment:
-                       Targeted Digital Twin environment. Available options:
-                         - act
-                    platform: Subclass of AvdModel.
-                    os_version: Subclass of AvdModel.
-                    mgmt_ipv4_pool: Subclass of AvdModel.
-                    username: Subclass of AvdModel.
-                    password: Subclass of AvdModel.
+                    environment: Targeted Digital Twin environment.
+                    fabric:
+                       Global Digital Twin settings related to the configuration of fabric nodes.
+
+                       Subclass of AvdModel.
+                    endpoints:
+                       Global Digital Twin settings related to the configuration of the endpoints.
+
+                       Subclass of AvdModel.
 
                 """
 
@@ -8069,8 +8014,8 @@ class EosDesigns(EosDesignsRootModel):
         """Name or description of the endpoints connected to these ports."""
         digital_twin: bool
         """
-        Setting this flag to `false` will exclude associated network ports from the generated Digital Twin
-        topology.
+        Setting this flag to `false` will exclude associated network ports from the generated structured and
+        rendered EOS configuration.
 
         Default value: `True`
         """
@@ -8315,8 +8260,8 @@ class EosDesigns(EosDesignsRootModel):
                        key if set.
                     endpoint: Name or description of the endpoints connected to these ports.
                     digital_twin:
-                       Setting this flag to `false` will exclude associated network ports from the generated Digital Twin
-                       topology.
+                       Setting this flag to `false` will exclude associated network ports from the generated structured and
+                       rendered EOS configuration.
                     speed:
                        Set adapter speed in the format `<interface_speed>` or `forced <interface_speed>` or `auto
                        <interface_speed>`.
@@ -10133,6 +10078,68 @@ class EosDesigns(EosDesignsRootModel):
 
                     """
 
+        class DigitalTwin(AvdModel):
+            """Subclass of AvdModel."""
+
+            class DigitalTwinPlatform(AvdModel):
+                """Subclass of AvdModel."""
+
+                _fields: ClassVar[dict] = {"act": {"type": str}}
+                act: Literal["veos", "cloudeos", "generic"] | None
+
+                if TYPE_CHECKING:
+
+                    def __init__(self, *, act: Literal["veos", "cloudeos", "generic"] | None | UndefinedType = Undefined) -> None:
+                        """
+                        DigitalTwinPlatform.
+
+
+                        Subclass of AvdModel.
+
+                        Args:
+                            act: act
+
+                        """
+
+            _fields: ClassVar[dict] = {"casted_avd_platform": {"type": str}, "digital_twin_platform": {"type": DigitalTwinPlatform}}
+            casted_avd_platform: str | None
+            """
+            Platform name used to match the AVD `platform_settings` item to enforce platform-specific settings
+            during AVD execution in Digital Twin mode.
+            """
+            digital_twin_platform: DigitalTwinPlatform
+            """
+            Digital Twin platform (may vary depending on the Digital Twin environment).
+            Should only be set for
+            `platform_settings` items that are used by the casted platform types. 
+
+            Subclass of AvdModel.
+            """
+
+            if TYPE_CHECKING:
+
+                def __init__(
+                    self, *, casted_avd_platform: str | None | UndefinedType = Undefined, digital_twin_platform: DigitalTwinPlatform | UndefinedType = Undefined
+                ) -> None:
+                    """
+                    DigitalTwin.
+
+
+                    Subclass of AvdModel.
+
+                    Args:
+                        casted_avd_platform:
+                           Platform name used to match the AVD `platform_settings` item to enforce platform-specific settings
+                           during AVD execution in Digital Twin mode.
+                        digital_twin_platform:
+                           Digital Twin platform (may vary depending on the Digital Twin environment).
+                           Should only be set for
+                           `platform_settings` items that are used by the casted platform types.
+
+                           Subclass of AvdModel.
+
+                    """
+
         _fields: ClassVar[dict] = {
             "platforms": {"type": Platforms},
             "trident_forwarding_table_partition": {"type": str},
@@ -10144,6 +10151,7 @@ class EosDesigns(EosDesignsRootModel):
             "feature_support": {"type": FeatureSupport},
             "management_interface": {"type": str, "default": "Management1"},
             "security_entropy_sources": {"type": SecurityEntropySources},
+            "digital_twin": {"type": DigitalTwin},
             "structured_config": {"type": EosCliConfigGen},
             "raw_eos_cli": {"type": str},
         }
@@ -10176,6 +10184,13 @@ class EosDesigns(EosDesignsRootModel):
         Entropy source improves the randomness of the numbers used to generate MACsec's cryptographic keys.
         Subclass of AvdModel.
         """
+        digital_twin: DigitalTwin
+        """
+        Data model that controls the selection of the casted AVD platform as well as the selection of the
+        Digital Twin virtual platform.
+
+        Subclass of AvdModel.
+        """
         structured_config: EosCliConfigGen
         """Custom structured config for eos_cli_config_gen."""
         raw_eos_cli: str | None
@@ -10196,6 +10211,7 @@ class EosDesigns(EosDesignsRootModel):
                 feature_support: FeatureSupport | UndefinedType = Undefined,
                 management_interface: str | UndefinedType = Undefined,
                 security_entropy_sources: SecurityEntropySources | UndefinedType = Undefined,
+                digital_twin: DigitalTwin | UndefinedType = Undefined,
                 structured_config: EosCliConfigGen | UndefinedType = Undefined,
                 raw_eos_cli: str | None | UndefinedType = Undefined,
             ) -> None:
@@ -10223,6 +10239,11 @@ class EosDesigns(EosDesignsRootModel):
                     management_interface: management_interface
                     security_entropy_sources:
                        Entropy source improves the randomness of the numbers used to generate MACsec's cryptographic keys.
+                       Subclass of AvdModel.
+                    digital_twin:
+                       Data model that controls the selection of the casted AVD platform as well as the selection of the
+                       Digital Twin virtual platform.
+
                        Subclass of AvdModel.
                     structured_config: Custom structured config for eos_cli_config_gen.
                     raw_eos_cli: EOS CLI rendered directly on the root level of the final EOS configuration.
@@ -10450,6 +10471,68 @@ class EosDesigns(EosDesignsRootModel):
 
                     """
 
+        class DigitalTwin(AvdModel):
+            """Subclass of AvdModel."""
+
+            class DigitalTwinPlatform(AvdModel):
+                """Subclass of AvdModel."""
+
+                _fields: ClassVar[dict] = {"act": {"type": str}}
+                act: Literal["veos", "cloudeos", "generic"] | None
+
+                if TYPE_CHECKING:
+
+                    def __init__(self, *, act: Literal["veos", "cloudeos", "generic"] | None | UndefinedType = Undefined) -> None:
+                        """
+                        DigitalTwinPlatform.
+
+
+                        Subclass of AvdModel.
+
+                        Args:
+                            act: act
+
+                        """
+
+            _fields: ClassVar[dict] = {"casted_avd_platform": {"type": str}, "digital_twin_platform": {"type": DigitalTwinPlatform}}
+            casted_avd_platform: str | None
+            """
+            Platform name used to match the AVD `platform_settings` item to enforce platform-specific settings
+            during AVD execution in Digital Twin mode.
+            """
+            digital_twin_platform: DigitalTwinPlatform
+            """
+            Digital Twin platform (may vary depending on the Digital Twin environment).
+            Should only be set for
+            `platform_settings` items that are used by the casted platform types. 
+
+            Subclass of AvdModel.
+            """
+
+            if TYPE_CHECKING:
+
+                def __init__(
+                    self, *, casted_avd_platform: str | None | UndefinedType = Undefined, digital_twin_platform: DigitalTwinPlatform | UndefinedType = Undefined
+                ) -> None:
+                    """
+                    DigitalTwin.
+
+
+                    Subclass of AvdModel.
+
+                    Args:
+                        casted_avd_platform:
+                           Platform name used to match the AVD `platform_settings` item to enforce platform-specific settings
+                           during AVD execution in Digital Twin mode.
+                        digital_twin_platform:
+                           Digital Twin platform (may vary depending on the Digital Twin environment).
+                           Should only be set for
+                           `platform_settings` items that are used by the casted platform types.
+
+                           Subclass of AvdModel.
+
+                    """
+
         _fields: ClassVar[dict] = {
             "platforms": {"type": Platforms},
             "trident_forwarding_table_partition": {"type": str},
@@ -10461,6 +10544,7 @@ class EosDesigns(EosDesignsRootModel):
             "feature_support": {"type": FeatureSupport},
             "management_interface": {"type": str, "default": "Management1"},
             "security_entropy_sources": {"type": SecurityEntropySources},
+            "digital_twin": {"type": DigitalTwin},
             "structured_config": {"type": EosCliConfigGen},
             "raw_eos_cli": {"type": str},
         }
@@ -10493,6 +10577,13 @@ class EosDesigns(EosDesignsRootModel):
         Entropy source improves the randomness of the numbers used to generate MACsec's cryptographic keys.
         Subclass of AvdModel.
         """
+        digital_twin: DigitalTwin
+        """
+        Data model that controls the selection of the casted AVD platform as well as the selection of the
+        Digital Twin virtual platform.
+
+        Subclass of AvdModel.
+        """
         structured_config: EosCliConfigGen
         """Custom structured config for eos_cli_config_gen."""
         raw_eos_cli: str | None
@@ -10513,6 +10604,7 @@ class EosDesigns(EosDesignsRootModel):
                 feature_support: FeatureSupport | UndefinedType = Undefined,
                 management_interface: str | UndefinedType = Undefined,
                 security_entropy_sources: SecurityEntropySources | UndefinedType = Undefined,
+                digital_twin: DigitalTwin | UndefinedType = Undefined,
                 structured_config: EosCliConfigGen | UndefinedType = Undefined,
                 raw_eos_cli: str | None | UndefinedType = Undefined,
             ) -> None:
@@ -10540,6 +10632,11 @@ class EosDesigns(EosDesignsRootModel):
                     management_interface: management_interface
                     security_entropy_sources:
                        Entropy source improves the randomness of the numbers used to generate MACsec's cryptographic keys.
+                       Subclass of AvdModel.
+                    digital_twin:
+                       Data model that controls the selection of the casted AVD platform as well as the selection of the
+                       Digital Twin virtual platform.
+
                        Subclass of AvdModel.
                     structured_config: Custom structured config for eos_cli_config_gen.
                     raw_eos_cli: EOS CLI rendered directly on the root level of the final EOS configuration.
@@ -17101,32 +17198,36 @@ class EosDesigns(EosDesignsRootModel):
                 class DigitalTwin(AvdModel):
                     """Subclass of AvdModel."""
 
-                    _fields: ClassVar[dict] = {"enabled": {"type": bool, "default": True}, "generate_ports": {"type": bool, "default": False}}
+                    _fields: ClassVar[dict] = {"enabled": {"type": bool, "default": True}, "generate_port_names": {"type": bool, "default": False}}
                     enabled: bool
                     """
-                    Setting this flag to `false` will exclude the endpoint and all associated adapters from the
-                    generated Digital Twin topology.
+                    Setting this flag to `false` will exclude the endpoint and all its associated adapters from the:
+                      -
+                    generated Digital Twin topology file.
+                      - generated structured and rendered EOS configuration.
+                    This
+                    setting overrides global `digital_twin.endpoints.enabled` flag.
 
                     Default value: `True`
                     """
-                    generate_ports: bool
-                    """
-                    Setting this flag to `true` will force all port names of the associated endpoint to be renamed based
-                    on the `EthX` pattern.
-                    This may be required in cases where Digital Twin environment enforces
-                    specific port naming convention. For example - ACT only supporting
-                    `Eth.*|Ma.*` patterns. Attempt to
-                    generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation
-                    of
-                    the invalid topology file.
+                    generate_port_names: bool
+                    r"""
+                    Setting this flag to `true` will force all port names of the associated endpoint to be renamed using
+                    the `EthX` pattern.
+                    This may be necessary in environments where the Digital Twin enforces specific
+                    port naming conventions. For example, ACT only supports
+                    port names matching `Et\d+`, `Eth\d+`,
+                    `Ethernet\d+`, `Ma\d+` or `Management\d+` patterns. Attempting to generate topology data for
+                    connected
+                    endpoints with port names like `iLO` or `eno.*` will result in an invalid topology file.
 
                     Default value: `False`
                     """
 
                     if TYPE_CHECKING:
 
-                        def __init__(self, *, enabled: bool | UndefinedType = Undefined, generate_ports: bool | UndefinedType = Undefined) -> None:
-                            """
+                        def __init__(self, *, enabled: bool | UndefinedType = Undefined, generate_port_names: bool | UndefinedType = Undefined) -> None:
+                            r"""
                             DigitalTwin.
 
 
@@ -17134,17 +17235,21 @@ class EosDesigns(EosDesignsRootModel):
 
                             Args:
                                 enabled:
-                                   Setting this flag to `false` will exclude the endpoint and all associated adapters from the
-                                   generated Digital Twin topology.
-                                generate_ports:
-                                   Setting this flag to `true` will force all port names of the associated endpoint to be renamed based
-                                   on the `EthX` pattern.
-                                   This may be required in cases where Digital Twin environment enforces
-                                   specific port naming convention. For example - ACT only supporting
-                                   `Eth.*|Ma.*` patterns. Attempt to
-                                   generate topology data for connected endpoint with `iLO` or `eno.*` ports will result in generation
-                                   of
-                                   the invalid topology file.
+                                   Setting this flag to `false` will exclude the endpoint and all its associated adapters from the:
+                                     -
+                                   generated Digital Twin topology file.
+                                     - generated structured and rendered EOS configuration.
+                                   This
+                                   setting overrides global `digital_twin.endpoints.enabled` flag.
+                                generate_port_names:
+                                   Setting this flag to `true` will force all port names of the associated endpoint to be renamed using
+                                   the `EthX` pattern.
+                                   This may be necessary in environments where the Digital Twin enforces specific
+                                   port naming conventions. For example, ACT only supports
+                                   port names matching `Et\d+`, `Eth\d+`,
+                                   `Ethernet\d+`, `Ma\d+` or `Management\d+` patterns. Attempting to generate topology data for
+                                   connected
+                                   endpoints with port names like `iLO` or `eno.*` will result in an invalid topology file.
 
                             """
 
@@ -18311,7 +18416,10 @@ class EosDesigns(EosDesignsRootModel):
                     """
                     digital_twin: bool
                     """
-                    Setting this flag to `false` will exclude adapter from the generated Digital Twin topology.
+                    Setting this flag to `false` will exclude adapter from the:
+                      - generated Digital Twin topology.
+                      -
+                    generated structured and rendered EOS configuration.
 
                     Default value: `True`
                     """
@@ -18553,7 +18661,11 @@ class EosDesigns(EosDesignsRootModel):
                                    switch.
 
                                    Subclass of AvdList with `Any` items.
-                                digital_twin: Setting this flag to `false` will exclude adapter from the generated Digital Twin topology.
+                                digital_twin:
+                                   Setting this flag to `false` will exclude adapter from the:
+                                     - generated Digital Twin topology.
+                                     -
+                                   generated structured and rendered EOS configuration.
                                 speed:
                                    Set adapter speed in the format `<interface_speed>` or `forced <interface_speed>` or `auto
                                    <interface_speed>`.
@@ -21187,32 +21299,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -21220,16 +21322,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -22131,7 +22230,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -22802,7 +22904,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -25328,31 +25432,23 @@ class EosDesigns(EosDesignsRootModel):
                         class DigitalTwin(AvdModel):
                             """Subclass of AvdModel."""
 
-                            _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                            platform: Literal["veos", "cloudeos"] | None
-                            """
-                            Desired virtual platform.
-                            Available option for ACT:
-                              - veos
-                              - cloudeos
-                            """
+                            _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                             os_version: str | None
-                            """Desired version of the Arista EOS."""
+                            """
+                            Desired OS version.
+                            Overrides global `digital_twin.fabric.os_version` flag.
+                            """
                             mgmt_ip: str | None
                             """
-                            Management interface IPv4 address of the virtual node.
-                            Use this key to override the dynamically
-                            generated MGMT IP.
+                            Desired management interface IPv4 address.
+                            Overrides the dynamically generated (from the pool
+                            `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                             """
 
                             if TYPE_CHECKING:
 
                                 def __init__(
-                                    self,
-                                    *,
-                                    platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                    os_version: str | None | UndefinedType = Undefined,
-                                    mgmt_ip: str | None | UndefinedType = Undefined,
+                                    self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined
                                 ) -> None:
                                     """
                                     DigitalTwin.
@@ -25361,16 +25457,13 @@ class EosDesigns(EosDesignsRootModel):
                                     Subclass of AvdModel.
 
                                     Args:
-                                        platform:
-                                           Desired virtual platform.
-                                           Available option for ACT:
-                                             - veos
-                                             - cloudeos
-                                        os_version: Desired version of the Arista EOS.
+                                        os_version:
+                                           Desired OS version.
+                                           Overrides global `digital_twin.fabric.os_version` flag.
                                         mgmt_ip:
-                                           Management interface IPv4 address of the virtual node.
-                                           Use this key to override the dynamically
-                                           generated MGMT IP.
+                                           Desired management interface IPv4 address.
+                                           Overrides the dynamically generated (from the pool
+                                           `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                     """
 
@@ -26284,7 +26377,10 @@ class EosDesigns(EosDesignsRootModel):
                         `default_flow_tracker_type` default value is `sampled`.
                         """
                         digital_twin: DigitalTwin
-                        """Subclass of AvdModel."""
+                        """
+                        Set the OS version and management IP address for the digital twin of the associated node(s).
+                        Subclass of AvdModel.
+                        """
 
                         if TYPE_CHECKING:
 
@@ -26964,7 +27060,9 @@ class EosDesigns(EosDesignsRootModel):
                                        Override the `default_flow_tracker_type`` set at the `node_type_key`
                                        level.
                                        `default_flow_tracker_type` default value is `sampled`.
-                                    digital_twin: Subclass of AvdModel.
+                                    digital_twin:
+                                       Set the OS version and management IP address for the digital twin of the associated node(s).
+                                       Subclass of AvdModel.
 
                                 """
 
@@ -29415,32 +29513,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -29448,16 +29536,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -30374,7 +30459,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -31056,7 +31144,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -33566,32 +33656,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -33599,16 +33679,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -34522,7 +34599,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -35202,7 +35282,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -44657,32 +44739,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -44690,16 +44762,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -45601,7 +45670,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -46272,7 +46344,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -48798,31 +48872,23 @@ class EosDesigns(EosDesignsRootModel):
                         class DigitalTwin(AvdModel):
                             """Subclass of AvdModel."""
 
-                            _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                            platform: Literal["veos", "cloudeos"] | None
-                            """
-                            Desired virtual platform.
-                            Available option for ACT:
-                              - veos
-                              - cloudeos
-                            """
+                            _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                             os_version: str | None
-                            """Desired version of the Arista EOS."""
+                            """
+                            Desired OS version.
+                            Overrides global `digital_twin.fabric.os_version` flag.
+                            """
                             mgmt_ip: str | None
                             """
-                            Management interface IPv4 address of the virtual node.
-                            Use this key to override the dynamically
-                            generated MGMT IP.
+                            Desired management interface IPv4 address.
+                            Overrides the dynamically generated (from the pool
+                            `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                             """
 
                             if TYPE_CHECKING:
 
                                 def __init__(
-                                    self,
-                                    *,
-                                    platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                    os_version: str | None | UndefinedType = Undefined,
-                                    mgmt_ip: str | None | UndefinedType = Undefined,
+                                    self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined
                                 ) -> None:
                                     """
                                     DigitalTwin.
@@ -48831,16 +48897,13 @@ class EosDesigns(EosDesignsRootModel):
                                     Subclass of AvdModel.
 
                                     Args:
-                                        platform:
-                                           Desired virtual platform.
-                                           Available option for ACT:
-                                             - veos
-                                             - cloudeos
-                                        os_version: Desired version of the Arista EOS.
+                                        os_version:
+                                           Desired OS version.
+                                           Overrides global `digital_twin.fabric.os_version` flag.
                                         mgmt_ip:
-                                           Management interface IPv4 address of the virtual node.
-                                           Use this key to override the dynamically
-                                           generated MGMT IP.
+                                           Desired management interface IPv4 address.
+                                           Overrides the dynamically generated (from the pool
+                                           `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                     """
 
@@ -49754,7 +49817,10 @@ class EosDesigns(EosDesignsRootModel):
                         `default_flow_tracker_type` default value is `sampled`.
                         """
                         digital_twin: DigitalTwin
-                        """Subclass of AvdModel."""
+                        """
+                        Set the OS version and management IP address for the digital twin of the associated node(s).
+                        Subclass of AvdModel.
+                        """
 
                         if TYPE_CHECKING:
 
@@ -50434,7 +50500,9 @@ class EosDesigns(EosDesignsRootModel):
                                        Override the `default_flow_tracker_type`` set at the `node_type_key`
                                        level.
                                        `default_flow_tracker_type` default value is `sampled`.
-                                    digital_twin: Subclass of AvdModel.
+                                    digital_twin:
+                                       Set the OS version and management IP address for the digital twin of the associated node(s).
+                                       Subclass of AvdModel.
 
                                 """
 
@@ -52885,32 +52953,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -52918,16 +52976,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -53844,7 +53899,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -54526,7 +54584,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -57036,32 +57096,22 @@ class EosDesigns(EosDesignsRootModel):
                     class DigitalTwin(AvdModel):
                         """Subclass of AvdModel."""
 
-                        _fields: ClassVar[dict] = {"platform": {"type": str}, "os_version": {"type": str}, "mgmt_ip": {"type": str}}
-                        platform: Literal["veos", "cloudeos"] | None
-                        """
-                        Desired virtual platform.
-                        Available option for ACT:
-                          - veos
-                          - cloudeos
-                        """
+                        _fields: ClassVar[dict] = {"os_version": {"type": str}, "mgmt_ip": {"type": str}}
                         os_version: str | None
-                        """Desired version of the Arista EOS."""
+                        """
+                        Desired OS version.
+                        Overrides global `digital_twin.fabric.os_version` flag.
+                        """
                         mgmt_ip: str | None
                         """
-                        Management interface IPv4 address of the virtual node.
-                        Use this key to override the dynamically
-                        generated MGMT IP.
+                        Desired management interface IPv4 address.
+                        Overrides the dynamically generated (from the pool
+                        `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
                         """
 
                         if TYPE_CHECKING:
 
-                            def __init__(
-                                self,
-                                *,
-                                platform: Literal["veos", "cloudeos"] | None | UndefinedType = Undefined,
-                                os_version: str | None | UndefinedType = Undefined,
-                                mgmt_ip: str | None | UndefinedType = Undefined,
-                            ) -> None:
+                            def __init__(self, *, os_version: str | None | UndefinedType = Undefined, mgmt_ip: str | None | UndefinedType = Undefined) -> None:
                                 """
                                 DigitalTwin.
 
@@ -57069,16 +57119,13 @@ class EosDesigns(EosDesignsRootModel):
                                 Subclass of AvdModel.
 
                                 Args:
-                                    platform:
-                                       Desired virtual platform.
-                                       Available option for ACT:
-                                         - veos
-                                         - cloudeos
-                                    os_version: Desired version of the Arista EOS.
+                                    os_version:
+                                       Desired OS version.
+                                       Overrides global `digital_twin.fabric.os_version` flag.
                                     mgmt_ip:
-                                       Management interface IPv4 address of the virtual node.
-                                       Use this key to override the dynamically
-                                       generated MGMT IP.
+                                       Desired management interface IPv4 address.
+                                       Overrides the dynamically generated (from the pool
+                                       `digital_twin.fabric.mgmt_ipv4_pool`) Digital Twin MGMT IP.
 
                                 """
 
@@ -57992,7 +58039,10 @@ class EosDesigns(EosDesignsRootModel):
                     `default_flow_tracker_type` default value is `sampled`.
                     """
                     digital_twin: DigitalTwin
-                    """Subclass of AvdModel."""
+                    """
+                    Set the OS version and management IP address for the digital twin of the associated node(s).
+                    Subclass of AvdModel.
+                    """
 
                     if TYPE_CHECKING:
 
@@ -58672,7 +58722,9 @@ class EosDesigns(EosDesignsRootModel):
                                    Override the `default_flow_tracker_type`` set at the `node_type_key`
                                    level.
                                    `default_flow_tracker_type` default value is `sampled`.
-                                digital_twin: Subclass of AvdModel.
+                                digital_twin:
+                                   Set the OS version and management IP address for the digital twin of the associated node(s).
+                                   Subclass of AvdModel.
 
                             """
 
@@ -58975,46 +59027,58 @@ class EosDesigns(EosDesignsRootModel):
             "type": PlatformSettings,
             "default": lambda cls: coerce_type(
                 [
-                    {"platforms": ["default"], "feature_support": {"queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}},
+                    {
+                        "platforms": ["default"],
+                        "feature_support": {"queue_monitor_length_notify": False},
+                        "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
+                    },
                     {
                         "platforms": ["7050X3"],
                         "feature_support": {"queue_monitor_length_notify": False},
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
                         "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072",
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["720XP"],
                         "feature_support": {"poe": True, "queue_monitor_length_notify": False},
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
                         "trident_forwarding_table_partition": "flexible exact-match 16000 l2-shared 18000 l3-shared 22000",
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["750", "755", "758"],
                         "management_interface": "Management0",
                         "feature_support": {"poe": True, "queue_monitor_length_notify": False},
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["720DP", "722XP", "710P"],
                         "feature_support": {"poe": True, "queue_monitor_length_notify": False},
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7010TX"],
                         "feature_support": {"queue_monitor_length_notify": False, "per_interface_mtu": False},
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7280R", "7280R2", "7020R"],
                         "lag_hardware_only": True,
                         "reload_delay": {"mlag": 900, "non_mlag": 1020},
                         "tcam_profile": "vxlan-routing",
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7280R3"],
                         "reload_delay": {"mlag": 900, "non_mlag": 1020},
                         "tcam_profile": "vxlan-routing",
                         "feature_support": {"evpn_gateway_all_active_multihoming": True},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7500R", "7500R2"],
@@ -59022,6 +59086,7 @@ class EosDesigns(EosDesignsRootModel):
                         "management_interface": "Management0",
                         "reload_delay": {"mlag": 900, "non_mlag": 1020},
                         "tcam_profile": "vxlan-routing",
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7500R3", "7800R3"],
@@ -59029,6 +59094,7 @@ class EosDesigns(EosDesignsRootModel):
                         "reload_delay": {"mlag": 900, "non_mlag": 1020},
                         "tcam_profile": "vxlan-routing",
                         "feature_support": {"evpn_gateway_all_active_multihoming": True},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
                         "platforms": ["7358X4"],
@@ -59040,16 +59106,23 @@ class EosDesigns(EosDesignsRootModel):
                             "bgp_update_wait_for_convergence": True,
                             "bgp_update_wait_install": False,
                         },
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
-                    {"platforms": ["7368X4"], "management_interface": "Management0", "reload_delay": {"mlag": 300, "non_mlag": 330}},
+                    {
+                        "platforms": ["7368X4"],
+                        "management_interface": "Management0",
+                        "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
+                    },
                     {
                         "platforms": ["7300X3"],
                         "management_interface": "Management0",
                         "reload_delay": {"mlag": 1200, "non_mlag": 1320},
                         "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072",
+                        "digital_twin": {"casted_avd_platform": "vEOS"},
                     },
                     {
-                        "platforms": ["VEOS", "VEOS-LAB", "vEOS", "vEOS-lab", "veos"],
+                        "platforms": ["VEOS", "VEOS-LAB", "vEOS", "vEOS-lab"],
                         "feature_support": {
                             "bgp_update_wait_for_convergence": False,
                             "bgp_update_wait_install": False,
@@ -59058,6 +59131,7 @@ class EosDesigns(EosDesignsRootModel):
                             "evpn_gateway_all_active_multihoming": True,
                         },
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"digital_twin_platform": {"act": "veos"}},
                     },
                     {
                         "platforms": ["CEOS", "cEOS", "ceos", "cEOSLab"],
@@ -59070,11 +59144,13 @@ class EosDesigns(EosDesignsRootModel):
                         },
                         "management_interface": "Management0",
                         "reload_delay": {"mlag": 300, "non_mlag": 330},
+                        "digital_twin": {"digital_twin_platform": {"act": "veos"}},
                     },
                     {
-                        "platforms": ["CloudEOS", "cloudeos"],
+                        "platforms": ["CloudEOS"],
                         "feature_support": {"bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False},
                         "p2p_uplinks_mtu": 9194,
+                        "digital_twin": {"digital_twin_platform": {"act": "cloudeos"}},
                     },
                     {
                         "platforms": ["AWE-5310", "AWE-7230R"],
@@ -59087,6 +59163,7 @@ class EosDesigns(EosDesignsRootModel):
                         },
                         "management_interface": "Management1/1",
                         "p2p_uplinks_mtu": 9194,
+                        "digital_twin": {"casted_avd_platform": "CloudEOS"},
                     },
                     {
                         "platforms": ["AWE-5510", "AWE-7250R"],
@@ -59099,6 +59176,7 @@ class EosDesigns(EosDesignsRootModel):
                         },
                         "management_interface": "Management1/1",
                         "p2p_uplinks_mtu": 9194,
+                        "digital_twin": {"casted_avd_platform": "CloudEOS"},
                     },
                     {
                         "platforms": ["AWE-7220R"],
@@ -59111,6 +59189,7 @@ class EosDesigns(EosDesignsRootModel):
                         },
                         "management_interface": "Management1",
                         "p2p_uplinks_mtu": 9194,
+                        "digital_twin": {"casted_avd_platform": "CloudEOS"},
                     },
                 ],
                 target_type=cls,
@@ -59730,11 +59809,19 @@ class EosDesigns(EosDesignsRootModel):
     design: Design
     """Subclass of AvdModel."""
     digital_twin: DigitalTwin
-    """Subclass of AvdModel."""
+    """
+    PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+    behavior.
+    Global settings to configure the Digital Twin of the Fabric.
+
+    Subclass of AvdModel.
+    """
     digital_twin_custom_structured_configuration_prefix: DigitalTwinCustomStructuredConfigurationPrefix
     """
-    Custom EOS Structured Configuration keys that will only be applied to the fabric nodes in the
-    Digital Twin mode.
+    PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+    behavior.
+    Custom EOS Structured Configuration keys that will be only applied to the fabric nodes in
+    the Digital Twin mode.
 
 
     Subclass of AvdList with `str` items.
@@ -59743,7 +59830,10 @@ class EosDesigns(EosDesignsRootModel):
     """
     digital_twin_mode: bool
     """
-    Globally enable generation of the Digital Twin metadata (topology, configuration, etc.).
+    PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+    behavior.
+    Enable generation of the Digital Twin version of the fabric (Digital Twin topology,
+    adjusted configuration, etc.).
 
     Default value: `False`
     """
@@ -60519,7 +60609,7 @@ class EosDesigns(EosDesignsRootModel):
     `custom_platform_settings` will be matched before the equivalent entries from `platform_settings`.
     Subclass of AvdList with `PlatformSettingsItem` items.
 
-    Default value: `lambda cls: coerce_type([{"platforms": ["default"], "feature_support": {"queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["7050X3"], "feature_support": {"queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072"}, {"platforms": ["720XP"], "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "trident_forwarding_table_partition": "flexible exact-match 16000 l2-shared 18000 l3-shared 22000"}, {"platforms": ["750", "755", "758"], "management_interface": "Management0", "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["720DP", "722XP", "710P"], "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["7010TX"], "feature_support": {"queue_monitor_length_notify": False, "per_interface_mtu": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["7280R", "7280R2", "7020R"], "lag_hardware_only": True, "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing"}, {"platforms": ["7280R3"], "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "feature_support": {"evpn_gateway_all_active_multihoming": True}}, {"platforms": ["7500R", "7500R2"], "lag_hardware_only": True, "management_interface": "Management0", "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing"}, {"platforms": ["7500R3", "7800R3"], "management_interface": "Management0", "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "feature_support": {"evpn_gateway_all_active_multihoming": True}}, {"platforms": ["7358X4"], "management_interface": "Management1/1", "reload_delay": {"mlag": 300, "non_mlag": 330}, "feature_support": {"queue_monitor_length_notify": False, "interface_storm_control": True, "bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False}}, {"platforms": ["7368X4"], "management_interface": "Management0", "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["7300X3"], "management_interface": "Management0", "reload_delay": {"mlag": 1200, "non_mlag": 1320}, "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072"}, {"platforms": ["VEOS", "VEOS-LAB", "vEOS", "vEOS-lab", "veos"], "feature_support": {"bgp_update_wait_for_convergence": False, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "evpn_gateway_all_active_multihoming": True}, "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["CEOS", "cEOS", "ceos", "cEOSLab"], "feature_support": {"bgp_update_wait_for_convergence": False, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "evpn_gateway_all_active_multihoming": True}, "management_interface": "Management0", "reload_delay": {"mlag": 300, "non_mlag": 330}}, {"platforms": ["CloudEOS", "cloudeos"], "feature_support": {"bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False}, "p2p_uplinks_mtu": 9194}, {"platforms": ["AWE-5310", "AWE-7230R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "platform_sfe_interface_profile": {"supported": True, "max_rx_queues": 6}}, "management_interface": "Management1/1", "p2p_uplinks_mtu": 9194}, {"platforms": ["AWE-5510", "AWE-7250R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "platform_sfe_interface_profile": {"supported": True, "max_rx_queues": 16}}, "management_interface": "Management1/1", "p2p_uplinks_mtu": 9194}, {"platforms": ["AWE-7220R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "poe": True}, "management_interface": "Management1", "p2p_uplinks_mtu": 9194}], target_type=cls)`
+    Default value: `lambda cls: coerce_type([{"platforms": ["default"], "feature_support": {"queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7050X3"], "feature_support": {"queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072", "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["720XP"], "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "trident_forwarding_table_partition": "flexible exact-match 16000 l2-shared 18000 l3-shared 22000", "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["750", "755", "758"], "management_interface": "Management0", "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["720DP", "722XP", "710P"], "feature_support": {"poe": True, "queue_monitor_length_notify": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7010TX"], "feature_support": {"queue_monitor_length_notify": False, "per_interface_mtu": False}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7280R", "7280R2", "7020R"], "lag_hardware_only": True, "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7280R3"], "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "feature_support": {"evpn_gateway_all_active_multihoming": True}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7500R", "7500R2"], "lag_hardware_only": True, "management_interface": "Management0", "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7500R3", "7800R3"], "management_interface": "Management0", "reload_delay": {"mlag": 900, "non_mlag": 1020}, "tcam_profile": "vxlan-routing", "feature_support": {"evpn_gateway_all_active_multihoming": True}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7358X4"], "management_interface": "Management1/1", "reload_delay": {"mlag": 300, "non_mlag": 330}, "feature_support": {"queue_monitor_length_notify": False, "interface_storm_control": True, "bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7368X4"], "management_interface": "Management0", "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["7300X3"], "management_interface": "Management0", "reload_delay": {"mlag": 1200, "non_mlag": 1320}, "trident_forwarding_table_partition": "flexible exact-match 16384 l2-shared 98304 l3-shared 131072", "digital_twin": {"casted_avd_platform": "vEOS"}}, {"platforms": ["VEOS", "VEOS-LAB", "vEOS", "vEOS-lab"], "feature_support": {"bgp_update_wait_for_convergence": False, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "evpn_gateway_all_active_multihoming": True}, "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"digital_twin_platform": {"act": "veos"}}}, {"platforms": ["CEOS", "cEOS", "ceos", "cEOSLab"], "feature_support": {"bgp_update_wait_for_convergence": False, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "evpn_gateway_all_active_multihoming": True}, "management_interface": "Management0", "reload_delay": {"mlag": 300, "non_mlag": 330}, "digital_twin": {"digital_twin_platform": {"act": "veos"}}}, {"platforms": ["CloudEOS"], "feature_support": {"bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False}, "p2p_uplinks_mtu": 9194, "digital_twin": {"digital_twin_platform": {"act": "cloudeos"}}}, {"platforms": ["AWE-5310", "AWE-7230R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "platform_sfe_interface_profile": {"supported": True, "max_rx_queues": 6}}, "management_interface": "Management1/1", "p2p_uplinks_mtu": 9194, "digital_twin": {"casted_avd_platform": "CloudEOS"}}, {"platforms": ["AWE-5510", "AWE-7250R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "platform_sfe_interface_profile": {"supported": True, "max_rx_queues": 16}}, "management_interface": "Management1/1", "p2p_uplinks_mtu": 9194, "digital_twin": {"casted_avd_platform": "CloudEOS"}}, {"platforms": ["AWE-7220R"], "feature_support": {"bgp_update_wait_for_convergence": True, "bgp_update_wait_install": False, "interface_storm_control": False, "queue_monitor_length_notify": False, "poe": True}, "management_interface": "Management1", "p2p_uplinks_mtu": 9194, "digital_twin": {"casted_avd_platform": "CloudEOS"}}], target_type=cls)`
     """
     platform_speed_groups: PlatformSpeedGroups
     """
@@ -61640,14 +61730,25 @@ class EosDesigns(EosDesignsRootModel):
                    By default the description is
                    templated from the VRF name.
                 design: Subclass of AvdModel.
-                digital_twin: Subclass of AvdModel.
+                digital_twin:
+                   PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+                   behavior.
+                   Global settings to configure the Digital Twin of the Fabric.
+
+                   Subclass of AvdModel.
                 digital_twin_custom_structured_configuration_prefix:
-                   Custom EOS Structured Configuration keys that will only be applied to the fabric nodes in the
-                   Digital Twin mode.
+                   PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+                   behavior.
+                   Custom EOS Structured Configuration keys that will be only applied to the fabric nodes in
+                   the Digital Twin mode.
 
 
                    Subclass of AvdList with `str` items.
-                digital_twin_mode: Globally enable generation of the Digital Twin metadata (topology, configuration, etc.).
+                digital_twin_mode:
+                   PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described
+                   behavior.
+                   Enable generation of the Digital Twin version of the fabric (Digital Twin topology,
+                   adjusted configuration, etc.).
                 enable_trunk_groups:
                    Enable Trunk Group support across eos_designs.
                    Warning: Because of the nature of the EOS Trunk Group

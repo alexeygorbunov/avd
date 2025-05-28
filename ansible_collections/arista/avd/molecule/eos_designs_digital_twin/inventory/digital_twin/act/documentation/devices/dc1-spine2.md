@@ -162,8 +162,8 @@ vlan internal order ascending range 1006 1199
 
 | Interface | Description | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
 | --------- | ----------- | ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
-| Ethernet1 | P2P_dc1-leaf1a_Ethernet2 | - | 10.255.255.2/31 | default | 9214 | False | - | - |
-| Ethernet2 | P2P_dc1-leaf1b_Ethernet2 | - | 10.255.255.6/31 | default | 9214 | False | - | - |
+| Ethernet1 | P2P_dc1-leaf1a_Ethernet2 | - | 10.255.255.2/31 | default | 9194 | False | - | - |
+| Ethernet2 | P2P_dc1-leaf1b_Ethernet2 | - | 10.255.255.6/31 | default | 9194 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -172,14 +172,14 @@ vlan internal order ascending range 1006 1199
 interface Ethernet1
    description P2P_dc1-leaf1a_Ethernet2
    no shutdown
-   mtu 9214
+   mtu 9194
    no switchport
    ip address 10.255.255.2/31
 !
 interface Ethernet2
    description P2P_dc1-leaf1b_Ethernet2
    no shutdown
-   mtu 9214
+   mtu 9194
    no switchport
    ip address 10.255.255.6/31
 ```

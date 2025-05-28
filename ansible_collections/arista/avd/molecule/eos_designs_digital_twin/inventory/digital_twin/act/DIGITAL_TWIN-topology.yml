@@ -18,7 +18,7 @@ nodes:
     ip_addr: 172.16.1.102/24
     version: 4.33.1.1F
 - dc1-leaf1c:
-    node_type: cloudeos
+    node_type: veos
     ip_addr: 172.16.1.151/24
     version: 4.33.2F
 - dc1-spine1:
@@ -26,7 +26,7 @@ nodes:
     ip_addr: 172.16.1.11/24
     version: 4.33.1.1F
 - dc1-spine2:
-    node_type: veos
+    node_type: cloudeos
     ip_addr: 172.16.1.202/24
     version: 4.33.1.1F
 - DC1-LEAF1-SERVER1:

@@ -34,6 +34,8 @@ class FabricDocumentationFacts(AvdFacts):
     structured_configs: dict[str, dict]
     _fabric_name: str
     _include_connected_endpoints: bool
+    _endpoints_in_digital_twin_topology: bool
+    
     """Avoid building data for connected endpoints unless we need it."""
 
     # Overriding class vars from AvdFacts, since fabric documentation covers all devices.
@@ -41,12 +43,19 @@ class FabricDocumentationFacts(AvdFacts):
     shared_utils = NotImplemented
 
     def __init__(  # pylint: disable=super-init-not-called
-        self, avd_facts: dict[str, EosDesignsFacts], structured_configs: dict[str, dict], fabric_name: str, include_connected_endpoints: bool, toc: bool
+        self,
+        avd_facts: dict[str, EosDesignsFacts],
+        structured_configs: dict[str, dict],
+        fabric_name: str,
+        include_connected_endpoints: bool,
+        toc: bool,
+        endpoints_in_digital_twin_topology: bool,
     ) -> None:
         self.avd_facts = avd_facts
         self._fabric_name = fabric_name
         self.structured_configs = structured_configs
         self._include_connected_endpoints = include_connected_endpoints
+        self._endpoints_in_digital_twin_topology = endpoints_in_digital_twin_topology
         self._toc = toc
 
     def render(self) -> dict[str, Any]:
@@ -259,7 +268,7 @@ class FabricDocumentationFacts(AvdFacts):
         First generate a dict of lists keyed with connected endpoint key.
         Then return a natural sorted dict where the inner lists are natural sorted on peer.
         """
-        if not self._include_connected_endpoints:
+        if not self._include_connected_endpoints and not self._endpoints_in_digital_twin_topology:
             return {}
 
         all_connected_endpoints = {}
@@ -304,7 +313,7 @@ class FabricDocumentationFacts(AvdFacts):
 
         First generating a set of tuples and then returning as a natural sorted list of dicts.
         """
-        if not self._include_connected_endpoints:
+        if not self._include_connected_endpoints and not self._endpoints_in_digital_twin_topology:
             return []
 
         set_of_tuples = {(item.key, item.type, item.description) for facts in self.avd_facts.values() for item in facts.connected_endpoints_keys}

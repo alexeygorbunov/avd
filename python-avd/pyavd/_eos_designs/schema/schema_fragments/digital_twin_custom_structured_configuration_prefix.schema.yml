@@ -13,5 +13,6 @@ keys:
     items:
       type: str
     description: |
-      Custom EOS Structured Configuration keys that will only be applied to the fabric nodes in the Digital Twin mode.
+      PREVIEW: This option is marked as "preview", while we refactor the code to conform to the described behavior.
+      Custom EOS Structured Configuration keys that will be only applied to the fabric nodes in the Digital Twin mode.
     default: ["digital_twin_custom_structured_configuration_"]

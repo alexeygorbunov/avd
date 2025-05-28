@@ -111,7 +111,7 @@ management_interfaces:
   ip_address: 172.16.1.102/24
   type: oob
 metadata:
-  platform: veos
+  platform: vEOS
   fabric_name: DIGITAL_TWIN
   digital_twin:
     environment: act

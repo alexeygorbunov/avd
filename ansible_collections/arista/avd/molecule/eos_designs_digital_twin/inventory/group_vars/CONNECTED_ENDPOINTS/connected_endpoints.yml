@@ -38,7 +38,7 @@ servers:
 
   - name: DC1-LEAF1-SERVER3
     digital_twin:
-      generate_ports: true
+      generate_port_names: true
     adapters:
       # Single-homed PO interface to stay
       - endpoint_ports: [Eth1, Eth2]
