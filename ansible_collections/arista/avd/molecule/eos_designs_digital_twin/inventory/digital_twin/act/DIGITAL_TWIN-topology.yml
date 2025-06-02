@@ -1,0 +1,89 @@
+cloudeos:
+  username: act_user
+  password: act_pass
+veos:
+  username: act_user
+  password: act_pass
+generic:
+  username: act_endpoint_user
+  password: act_endpoint_password
+  version: ubuntu-2404-lts-amd64
+nodes:
+- dc1-leaf1a:
+    node_type: veos
+    ip_addr: 172.16.1.101/24
+    version: 4.33.1.1F
+- dc1-leaf1b:
+    node_type: veos
+    ip_addr: 172.16.1.102/24
+    version: 4.33.1.1F
+- dc1-leaf1c:
+    node_type: veos
+    ip_addr: 172.16.1.151/24
+    version: 4.33.2F
+- dc1-spine1:
+    node_type: veos
+    ip_addr: 172.16.1.11/24
+    version: 4.33.1.1F
+- dc1-spine2:
+    node_type: cloudeos
+    ip_addr: 172.16.1.202/24
+    version: 4.33.1.1F
+- DC1-LEAF1-SERVER1:
+    node_type: generic
+    ip_addr: 10.10.10.2/24
+    version: ubuntu-2404-lts-amd64
+- DC1-LEAF1-SERVER2:
+    node_type: generic
+    ip_addr: 10.10.10.3/24
+    version: ubuntu-2404-lts-amd64
+- DC1-LEAF1-SERVER3:
+    node_type: generic
+    ip_addr: 10.10.10.4/24
+    version: ubuntu-2404-lts-amd64
+links:
+- connection:
+  - dc1-leaf1a:Ethernet1
+  - dc1-spine1:Ethernet1
+- connection:
+  - dc1-leaf1a:Ethernet2
+  - dc1-spine2:Ethernet1
+- connection:
+  - dc1-leaf1a:Ethernet8
+  - dc1-leaf1c:Ethernet1
+- connection:
+  - dc1-leaf1a:Ethernet9
+  - dc1-leaf1b:Ethernet9
+- connection:
+  - dc1-leaf1a:Ethernet10
+  - dc1-leaf1b:Ethernet10
+- connection:
+  - dc1-leaf1b:Ethernet1
+  - dc1-spine1:Ethernet2
+- connection:
+  - dc1-leaf1b:Ethernet2
+  - dc1-spine2:Ethernet2
+- connection:
+  - dc1-leaf1b:Ethernet8
+  - dc1-leaf1c:Ethernet2
+- connection:
+  - dc1-leaf1a:Ethernet11
+  - DC1-LEAF1-SERVER1:Eth1
+- connection:
+  - dc1-leaf1b:Ethernet11
+  - DC1-LEAF1-SERVER1:Eth2
+- connection:
+  - dc1-leaf1a:Ethernet13
+  - DC1-LEAF1-SERVER2:Eth1
+- connection:
+  - dc1-leaf1b:Ethernet13
+  - DC1-LEAF1-SERVER2:Eth2
+- connection:
+  - dc1-leaf1a:Ethernet15
+  - DC1-LEAF1-SERVER3:Eth1
+- connection:
+  - dc1-leaf1a:Ethernet17
+  - DC1-LEAF1-SERVER3:Eth2
+- connection:
+  - dc1-leaf1c:Ethernet11
+  - DC1-LEAF1-SERVER3:Eth3

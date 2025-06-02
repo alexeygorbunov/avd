@@ -1,0 +1,96 @@
+aaa_root:
+  disabled: true
+config_end: true
+enable_password:
+  disabled: true
+ethernet_interfaces:
+- name: Ethernet1
+  description: L2_dc1-leaf1a_Ethernet8
+  shutdown: false
+  channel_group:
+    id: 1
+    mode: active
+  peer: dc1-leaf1a
+  peer_interface: Ethernet8
+  peer_type: l3leaf
+- name: Ethernet2
+  description: L2_dc1-leaf1b_Ethernet8
+  shutdown: false
+  channel_group:
+    id: 1
+    mode: active
+  peer: dc1-leaf1b
+  peer_interface: Ethernet8
+  peer_type: l3leaf
+- name: Ethernet11
+  description: SERVER_DC1-LEAF1-SERVER3_Eth3
+  shutdown: false
+  peer: DC1-LEAF1-SERVER3
+  peer_interface: Eth3
+  peer_type: server
+  switchport:
+    enabled: true
+- name: Ethernet31
+  shutdown: false
+  spanning_tree_portfast: edge
+  peer_type: network_port
+  port_profile: base_access_portfast
+  switchport:
+    enabled: true
+    mode: access
+- name: Ethernet33
+  shutdown: false
+  spanning_tree_portfast: edge
+  peer_type: network_port
+  port_profile: base_access_portfast
+  switchport:
+    enabled: true
+    mode: access
+hostname: dc1-leaf1c
+ip_igmp_snooping:
+  globally_enabled: true
+is_deployed: true
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+  - name: MGMT
+management_interfaces:
+- name: Management1
+  description: OOB_MANAGEMENT
+  shutdown: false
+  vrf: MGMT
+  ip_address: 172.16.1.151/24
+  type: oob
+metadata:
+  platform: vEOS
+  fabric_name: DIGITAL_TWIN
+  digital_twin:
+    environment: act
+    node_type: veos
+    ip_addr: 172.16.1.151/24
+    version: 4.33.2F
+    username: act_user
+    password: act_pass
+ntp:
+  servers:
+  - name: ntp_server_for_virtual_nodes_only.ntp.org
+port_channel_interfaces:
+- name: Port-Channel1
+  description: L2_DC1_L3_LEAF1_Port-Channel8
+  shutdown: false
+  switchport:
+    enabled: true
+    mode: trunk
+    trunk:
+      allowed_vlan: none
+prompt: virtual_friendly_prompt
+service_routing_protocols_model: multi-agent
+transceiver_qsfp_default_mode_4x10: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+vrfs:
+- name: MGMT
+  ip_routing: false
