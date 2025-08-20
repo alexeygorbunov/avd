@@ -61,6 +61,15 @@ ethernet_interfaces:
   peer: dc1-leaf1c
   peer_interface: Ethernet1
   peer_type: l2leaf
+- name: Ethernet9
+  description: VAST-ENO1-L3
+  shutdown: false
+  vrf: VRF11
+  ip_address: null
+  ipv6_enable: true
+  peer_type: l3_interface
+  switchport:
+    enabled: false
 - name: Ethernet5
   description: SERVER_dc1-leaf1-server1_PCI1
   shutdown: false
@@ -182,6 +191,12 @@ prefix_lists:
   sequence_numbers:
   - sequence: 10
     action: permit 10.255.1.96/31
+- name: PL_VAST_32
+  sequence_numbers:
+  - sequence: 10
+    action: permit 10.0.0.1/32
+  - sequence: 20
+    action: permit 10.0.0.2/32
 route_maps:
 - name: RM-MLAG-PEER-IN
   sequence_numbers:
@@ -204,6 +219,12 @@ route_maps:
     - ip address prefix-list PL-MLAG-PEER-VRFS
   - sequence: 20
     type: permit
+- name: RM_VAST_IN
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    match:
+    - ip address prefix-list PL_VAST_32
 router_bfd:
   multihop:
     interval: 300
@@ -241,6 +262,7 @@ router_bgp:
     password: Q4fqtbqcZ7oQuKfuWtNGRQ==
     send_community: all
     maximum_routes: 0
+  - name: VAST-EBGP
   neighbors:
   - ip_address: 10.255.1.97
     peer_group: MLAG-IPv4-UNDERLAY-PEER
@@ -331,6 +353,13 @@ router_bgp:
       activate: true
     - name: EVPN-OVERLAY-PEERS
       activate: false
+    - name: VAST-EBGP
+      activate: true
+      route_map_in: RM_VAST_IN
+      next_hop:
+        address_family_ipv6:
+          enabled: true
+          originate: true
   vrfs:
   - name: VRF10
     rd: 10.255.0.3:10
@@ -368,10 +397,15 @@ router_bgp:
     - ip_address: 10.255.1.97
       peer_group: MLAG-IPv4-UNDERLAY-PEER
       description: dc1-leaf1b_Vlan3010
+    neighbor_interfaces:
+    - name: Ethernet9
+      remote_as: '65101'
+      peer_group: VAST-EBGP
     redistribute:
       connected:
         enabled: true
         route_map: RM-CONN-2-BGP-VRFS
+    eos_cli: "address-family ipv4\n  bgp next-hop address-family ipv6"
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: mstp
@@ -493,6 +527,8 @@ vrfs:
   tenant: TENANT1
 - name: VRF11
   ip_routing: true
+  ipv6_routing: true
+  ip_routing_ipv6_interfaces: true
   tenant: TENANT1
 vxlan_interface:
   vxlan1:

@@ -344,6 +344,12 @@ vlan 4094
 | Ethernet1 | P2P_dc1-spine1_Ethernet1 | - | 10.255.255.1/31 | default | 1500 | False | - | - |
 | Ethernet2 | P2P_dc1-spine2_Ethernet1 | - | 10.255.255.3/31 | default | 1500 | False | - | - |
 
+##### IPv6
+
+| Interface | Description | Channel Group | IPv6 Address | VRF | MTU | Shutdown | ND RA Disabled | Managed Config Flag | IPv6 ACL In | IPv6 ACL Out |
+| --------- | ----------- | --------------| ------------ | --- | --- | -------- | -------------- | -------------------| ----------- | ------------ |
+| Ethernet9 | VAST-ENO1-L3 | - | - | VRF11 | - | False | - | - | - | - |
+
 #### Ethernet Interfaces Device Configuration
 
 ```eos
@@ -381,6 +387,13 @@ interface Ethernet8
    description L2_dc1-leaf1c_Ethernet1
    no shutdown
    channel-group 8 mode active
+!
+interface Ethernet9
+   description VAST-ENO1-L3
+   no shutdown
+   no switchport
+   vrf VRF11
+   ipv6 enable
 ```
 
 ### Port-Channel Interfaces
@@ -638,7 +651,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 | default | True |
 | MGMT | False |
 | VRF10 | True |
-| VRF11 | True |
+| VRF11 | True (ipv6 interfaces) |
 
 #### IP Routing Device Configuration
 
@@ -647,7 +660,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 ip routing
 no ip routing vrf MGMT
 ip routing vrf VRF10
-ip routing vrf VRF11
+ip routing ipv6 interfaces vrf VRF11
 ```
 
 ### IPv6 Routing
@@ -659,7 +672,7 @@ ip routing vrf VRF11
 | default | False |
 | MGMT | false |
 | VRF10 | false |
-| VRF11 | false |
+| VRF11 | true |
 
 ### Static Routes
 
@@ -722,6 +735,11 @@ ASN Notation: asplain
 | Send community | all |
 | Maximum routes | 12000 |
 
+##### VAST-EBGP
+
+| Settings | Value |
+| -------- | ----- |
+
 #### BGP Neighbors
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
@@ -733,6 +751,12 @@ ASN Notation: asplain
 | 10.255.255.2 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+
+#### BGP Neighbor Interfaces
+
+| Neighbor Interface | VRF | Peer Group | Remote AS | Peer Filter |
+| ------------------ | --- | ---------- | --------- | ----------- |
+| Ethernet9 | VRF11 | VAST-EBGP | 65101 | - |
 
 #### Router BGP EVPN Address Family
 
@@ -787,6 +811,7 @@ router bgp 65101
    neighbor MLAG-IPv4-UNDERLAY-PEER password 7 <removed>
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
    neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 12000
+   neighbor VAST-EBGP peer group
    neighbor 10.255.0.1 peer group EVPN-OVERLAY-PEERS
    neighbor 10.255.0.1 remote-as 65100
    neighbor 10.255.0.1 description dc1-spine1_Loopback0
@@ -840,6 +865,9 @@ router bgp 65101
       no neighbor EVPN-OVERLAY-PEERS activate
       neighbor IPv4-UNDERLAY-PEERS activate
       neighbor MLAG-IPv4-UNDERLAY-PEER activate
+      neighbor VAST-EBGP activate
+      neighbor VAST-EBGP route-map RM_VAST_IN in
+      neighbor VAST-EBGP next-hop address-family ipv6 originate
    !
    vrf VRF10
       rd 10.255.0.3:10
@@ -858,6 +886,10 @@ router bgp 65101
       neighbor 10.255.1.97 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.97 description dc1-leaf1b_Vlan3010
       redistribute connected route-map RM-CONN-2-BGP-VRFS
+      neighbor interface Ethernet9 peer-group VAST-EBGP remote-as 65101
+      !
+      address-family ipv4
+        bgp next-hop address-family ipv6
 ```
 
 ## BFD
@@ -912,6 +944,13 @@ router bfd
 | -------- | ------ |
 | 10 | permit 10.255.1.96/31 |
 
+##### PL_VAST_32
+
+| Sequence | Action |
+| -------- | ------ |
+| 10 | permit 10.0.0.1/32 |
+| 20 | permit 10.0.0.2/32 |
+
 #### Prefix-lists Device Configuration
 
 ```eos
@@ -922,6 +961,10 @@ ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
 !
 ip prefix-list PL-MLAG-PEER-VRFS
    seq 10 permit 10.255.1.96/31
+!
+ip prefix-list PL_VAST_32
+   seq 10 permit 10.0.0.1/32
+   seq 20 permit 10.0.0.2/32
 ```
 
 ### Route-maps
@@ -947,6 +990,12 @@ ip prefix-list PL-MLAG-PEER-VRFS
 | -------- | ---- | ----- | --- | ------------- | -------- |
 | 10 | permit | - | origin incomplete | - | - |
 
+##### RM_VAST_IN
+
+| Sequence | Type | Match | Set | Sub-Route-Map | Continue |
+| -------- | ---- | ----- | --- | ------------- | -------- |
+| 10 | permit | ip address prefix-list PL_VAST_32 | - | - | - |
+
 #### Route-maps Device Configuration
 
 ```eos
@@ -962,6 +1011,9 @@ route-map RM-CONN-2-BGP-VRFS permit 20
 route-map RM-MLAG-PEER-IN permit 10
    description Make routes learned over MLAG Peer-link less preferred on spines to ensure optimal routing
    set origin incomplete
+!
+route-map RM_VAST_IN permit 10
+   match ip address prefix-list PL_VAST_32
 ```
 
 ## VRF Instances
@@ -972,7 +1024,7 @@ route-map RM-MLAG-PEER-IN permit 10
 | -------- | ---------- |
 | MGMT | disabled |
 | VRF10 | enabled |
-| VRF11 | enabled |
+| VRF11 | enabled (ipv6 interface) |
 
 ### VRF Instances Device Configuration
 

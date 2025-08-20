@@ -42,6 +42,35 @@ l3leaf:
           # Definition of the port to be used in the uplink device facing this device.
           # Note that the number of elements in this list must match the length of 'uplink_switches' as well as 'uplink_interfaces'
           uplink_switch_interfaces: [Ethernet1, Ethernet1]
+          structured_config:
+            router_bgp:
+              vrfs:
+                - name: VRF11
+                  neighbor_interfaces:
+                    - name: Ethernet9
+                      remote_as: 65101
+                      peer_group: VAST-EBGP
+                  eos_cli: |-
+                    address-family ipv4
+                      bgp next-hop address-family ipv6
+            vrfs:
+              - name: VRF11
+                ip_routing_ipv6_interfaces: true
+                ipv6_routing: true
+            route_maps:
+              - name: RM_VAST_IN
+                sequence_numbers:
+                  - sequence: 10
+                    type: permit
+                    match:
+                      - "ip address prefix-list PL_VAST_32"
+            prefix_lists:
+              - name: PL_VAST_32
+                sequence_numbers:
+                  - sequence: 10
+                    action: "permit 10.0.0.1/32"
+                  - sequence: 20
+                    action: "permit 10.0.0.2/32"
         - name: dc1-leaf1b
           id: 2
           mgmt_ip: 172.16.1.102/24
