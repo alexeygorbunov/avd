@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import MISSING, dataclass, field, fields, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
@@ -13,14 +13,36 @@ from pyavd._cv.client.configlet import ASSIGNMENT_MATCH_POLICY_MAP
 from pyavd._cv.client.exceptions import CVManifestError
 from pyavd._cv.client.models import CVTag, CVTagAssignment
 
-AVD_NAMESPACE = uuid5(NAMESPACE_DNS, "avd.arista.com")
-AVD_ENTITY_PREFIX = "avd_"
-
 if TYPE_CHECKING:
     from pyavd._cv.api.arista.configlet.v1 import ConfigletAssignment
 
+AVD_NAMESPACE = uuid5(NAMESPACE_DNS, "avd.arista.com")
+AVD_ENTITY_PREFIX = "avd_"
 
-@dataclass
+
+def reset_dataclass_for_sync(obj: object) -> None:
+    """
+    Reset all mutable fields of a dataclass instance to their declared defaults.
+
+    Strategy per field:
+    - Non-frozen mutable dataclass value → recurse (preserves the frozen Avd* intent object nested inside).
+    - Field with a scalar default → set to that default.
+    - Field with a default_factory (lists, etc.) → call the factory and set.
+    - Required field with no default and no mutable-dataclass value → skip (holds a frozen Avd* input).
+    """
+    if not is_dataclass(obj) or isinstance(obj, type):
+        return
+    for f in fields(obj):
+        value = getattr(obj, f.name)
+        if value is not None and is_dataclass(value) and not type(value).__dataclass_params__.frozen:
+            reset_dataclass_for_sync(value)
+        elif f.default is not MISSING:
+            setattr(obj, f.name, f.default)
+        elif f.default_factory is not MISSING:
+            setattr(obj, f.name, f.default_factory())
+
+
+@dataclass(frozen=True)
 class CloudVision:
     servers: str | list[str]
     token: str | None
@@ -33,13 +55,11 @@ class CloudVision:
     proxy_password: str | None
 
 
-@dataclass
-class CVChangeControl:
+@dataclass(frozen=True)
+class AvdChangeControl:
     name: str | None = None
     description: str | None = None
-    id: str | None = None
-    """ `id` should not be set on the request. It will be updated with the ID of the created Change Control. """
-    change_control_template: CVChangeControlTemplate | None = None
+    change_control_template: AvdChangeControlTemplate | None = None
     requested_state: Literal["pending approval", "approved", "running", "completed", "deleted"] = "pending approval"
     """
     The requested state for the Change Control.
@@ -50,11 +70,34 @@ class CVChangeControl:
     - `"completed"`: Approve and start the Change Control. Wait for the Change Control to be completed.
     - `"deleted"`: Create and delete the Change Control. Used for dry-run where no changes will be committed to the network.
     """
-    state: Literal["pending approval", "approved", "running", "completed", "deleted", "failed"] | None = None
 
 
 @dataclass
-class CVChangeControlTemplate:
+class CVChangeControl:
+    avd_change_control: AvdChangeControl
+    id: str | None = None
+    """ Do not set this manually. """
+    state: Literal["pending approval", "approved", "running", "completed", "deleted", "failed"] | None = None
+
+    @property
+    def name(self) -> str | None:
+        return self.avd_change_control.name
+
+    @property
+    def description(self) -> str | None:
+        return self.avd_change_control.description
+
+    @property
+    def change_control_template(self) -> AvdChangeControlTemplate | None:
+        return self.avd_change_control.change_control_template
+
+    @property
+    def requested_state(self) -> Literal["pending approval", "approved", "running", "completed", "deleted"]:
+        return self.avd_change_control.requested_state
+
+
+@dataclass(frozen=True)
+class AvdChangeControlTemplate:
     name: str
     id: str | None = None
 
@@ -165,8 +208,9 @@ class CVWorkspaceDeviceBuildResult:
     """Configuration validation results."""
 
 
-@dataclass
-class CVWorkspaceBuildWarningsConfig:
+
+@dataclass(frozen=True)
+class AvdWorkspaceBuildWarningsConfig:
     enabled: bool = True
     """Fetch and expose Workspace build warnings."""
     suppress_patterns: list[str] = field(default_factory=list)
@@ -175,8 +219,8 @@ class CVWorkspaceBuildWarningsConfig:
     """Suppress Workspace build warnings related to the usage of the `portfast` feature on switchports."""
 
 
-@dataclass
-class CVWorkspace:
+@dataclass(frozen=True)
+class AvdWorkspace:
     name: str = field(default_factory=lambda: f"AVD {datetime.now()}")
     description: str | None = None
     id: str = field(default_factory=lambda: f"ws-{uuid4()}")
@@ -194,26 +238,61 @@ class CVWorkspace:
     """
     force: bool = False
     """ Force submit the workspace even if some devices are not actively streaming to CloudVision."""
+    build_warnings: AvdWorkspaceBuildWarningsConfig = field(default_factory=AvdWorkspaceBuildWarningsConfig)
+    """Configuration settings to control fetching and exposing Workspace build warnings."""
+    max_sync_retries: int = 2
+    """
+    Maximum number of retry attempts to synchronize Workspace.
+
+    Synchronization attempts are made when:
+    - Workspace.needs_rebase == True after building a Workspace
+    - Workspace.responses.values[<request_id>].status == ResponseStatus.FAIL
+        and Workspace.responses.values[<request_id>].code == ResponseCode.SYNCHRONIZATION_REQUIRED
+    """
+
+
+@dataclass
+class CVWorkspace:
+    avd_workspace: AvdWorkspace
     state: Literal["pending", "built", "submitted", "build failed", "submit failed", "abandoned", "deleted"] | None = None
     """The final state of the Workspace. Do not set this manually."""
     change_control_id: str | None = None
     """Do not set this manually."""
     build_id: str | None = None
     """last_build_id of the Workspace. Used to fetch build details related to the last Workspace build attempt. Do not set this manually."""
-    build_warnings: CVWorkspaceBuildWarningsConfig = field(default_factory=CVWorkspaceBuildWarningsConfig)
-    """Configuration settings to control fetching and exposing Workspace build warnings."""
     device_build_results: list[CVWorkspaceDeviceBuildResult] = field(default_factory=list)
     """Details of per-device Workspace build results. Do not set this manually."""
 
+    @property
+    def name(self) -> str:
+        return self.avd_workspace.name
 
-@dataclass
-class DeployChangeControlResult:
-    failed: bool = False
-    errors: list = field(default_factory=list)
-    warnings: list = field(default_factory=list)
-    change_control: CVChangeControl | None = None
-    deployed_devices: list[CVDevice] = field(default_factory=list)
-    skipped_devices: list[CVDevice] = field(default_factory=list)
+    @property
+    def description(self) -> str | None:
+        return self.avd_workspace.description
+
+    @property
+    def id(self) -> str:
+        return self.avd_workspace.id
+
+    @property
+    def requested_state(self) -> Literal["pending", "built", "submitted", "abandoned", "deleted"]:
+        return self.avd_workspace.requested_state
+
+    @property
+    def force(self) -> bool:
+        return self.avd_workspace.force
+
+    @property
+    def build_warnings(self) -> AvdWorkspaceBuildWarningsConfig:
+        return self.avd_workspace.build_warnings
+
+    @property
+    def max_sync_retries(self) -> int:
+        return self.avd_workspace.max_sync_retries
+
+    def reset_for_sync(self) -> None:
+        reset_dataclass_for_sync(self)
 
 
 @dataclass
@@ -221,7 +300,7 @@ class DeployToCvResult:
     failed: bool = False
     errors: list = field(default_factory=list)
     warnings: list = field(default_factory=list)
-    workspace: CVWorkspace | None = field(default_factory=CVWorkspace)
+    workspace: CVWorkspace | None = None
     change_control: CVChangeControl | None = None
     deployed_configs: list[CVEosConfig] = field(default_factory=list)
     deployed_static_config_containers: list[AvdContainer] = field(default_factory=list)
@@ -241,9 +320,12 @@ class DeployToCvResult:
     removed_device_tags: list[CVDeviceTag] = field(default_factory=list)
     removed_interface_tags: list[CVInterfaceTag] = field(default_factory=list)
 
+    def reset_for_sync(self) -> None:
+        reset_dataclass_for_sync(self)
 
-@dataclass
-class CVDevice:
+
+@dataclass(frozen=True)
+class AvdDevice:
     hostname: str
     """
     Device hostname or intended hostname.
@@ -252,6 +334,15 @@ class CVDevice:
     """
     serial_number: str | None = None
     system_mac_address: str | None = None
+
+
+@dataclass
+class CVDevice:
+    avd_device: AvdDevice
+    serial_number: str | None = None
+    """ Do not set this manually. """
+    system_mac_address: str | None = None
+    """ Do not set this manually. """
     _exists_on_cv: bool | None = None
     """ Do not set this manually. """
     _streaming: bool | None = None
@@ -259,6 +350,21 @@ class CVDevice:
     Device's streaming status.
     Do not set this manually.
     """
+
+    @property
+    def hostname(self) -> str:
+        return self.avd_device.hostname
+
+    @property
+    def intended_serial_number(self) -> str | None:
+        return self.avd_device.serial_number
+
+    @property
+    def intended_system_mac_address(self) -> str | None:
+        return self.avd_device.system_mac_address
+
+    def reset_for_sync(self) -> None:
+        reset_dataclass_for_sync(self)
 
 
 @dataclass
