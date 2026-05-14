@@ -14,6 +14,7 @@ Serial Number: DEADBEEFC0FFEW
   - [IP Name Servers](#ip-name-servers)
   - [IP Name Server Groups](#ip-name-server-groups)
   - [Domain Lookup](#domain-lookup)
+  - [IP Hosts](#ip-hosts)
   - [Clock Settings](#clock-settings)
   - [NTP](#ntp)
   - [PTP](#ptp)
@@ -52,6 +53,8 @@ Serial Number: DEADBEEFC0FFEW
   - [Address Locking Device Configuration](#address-locking-device-configuration)
 - [Management Security](#management-security)
   - [Management Security Summary](#management-security-summary)
+  - [Management Security Auto-Certificate Profiles](#management-security-auto-certificate-profiles)
+  - [Management Security Auto-Certificate Protocols](#management-security-auto-certificate-protocols)
   - [Management Security SSL Profiles](#management-security-ssl-profiles)
   - [SSL profile test1-chain-cert Certificates Summary](#ssl-profile-test1-chain-cert-certificates-summary)
   - [SSL profile test1-trust-cert Certificates Summary](#ssl-profile-test1-trust-cert-certificates-summary)
@@ -191,6 +194,7 @@ Serial Number: DEADBEEFC0FFEW
   - [Monitor Loop Protection Configuration](#monitor-loop-protection-configuration)
 - [MPLS](#mpls)
   - [MPLS and LDP](#mpls-and-ldp)
+  - [MPLS Label Ranges](#mpls-label-ranges)
   - [MPLS Interfaces](#mpls-interfaces)
   - [MPLS RSVP](#mpls-rsvp)
   - [MPLS Device Configuration](#mpls-device-configuration)
@@ -671,6 +675,26 @@ ip name-server group mynameserver2
 ```eos
 ip domain lookup source-interface Loopback0
 ip domain lookup vrf mgt source-interface Management0
+```
+
+### IP Hosts
+
+#### IP Host Summary
+
+| Host | IPv4 Address |
+| ---- | ------------ |
+| TEST1 | 10.1.1.1 |
+| host-with-multiple-ips | 1.1.1.1<br>2.2.2.2<br>4.4.4.4 |
+| host-with-same-ip | 10.1.1.1 |
+| small-host | 1.1.1.1 |
+
+#### IP Host Device Configuration
+
+```eos
+ip host TEST1 10.1.1.1
+ip host host-with-multiple-ips 1.1.1.1 2.2.2.2 4.4.4.4
+ip host host-with-same-ip 10.1.1.1
+ip host small-host 1.1.1.1
 ```
 
 ### Clock Settings
@@ -1592,6 +1616,7 @@ radius proxy
 | default | 10.10.11.156 | - | - | - | 34 | 45 |
 | default | 10.10.11.156 | True | 345 | - | - | - |
 | default | 10.10.10.249 | - | - | - | 1 | 1 |
+| default | 10.10.10.249 | - | - | - | 1 | 1 |
 | mgt | 10.10.10.157 | - | - | - | 1 | 1 |
 | mgt | 10.10.11.159 | - | - | - | - | 1 |
 | mgt | 10.10.11.160 | - | - | - | 1 | - |
@@ -1612,11 +1637,12 @@ radius-server host 10.10.10.158 timeout 1 retransmit 1 key 7 <removed>
 radius-server host 10.10.11.156 tls port 1700 timeout 1 retransmit 1
 radius-server host 10.10.11.156 timeout 34 retransmit 45 key 7 <removed>
 radius-server host 10.10.11.156 tls port 345
-radius-server host 10.10.10.249 timeout 1 retransmit 1 key 7 <removed>
+radius-server host 10.10.10.249 timeout 1 retransmit 1 key 0 <removed>
+radius-server host 10.10.10.249 timeout 1 retransmit 1 key 8a <removed>
 radius-server host 10.10.10.157 vrf mgt timeout 1 retransmit 1 key 7 <removed>
 radius-server host 10.10.11.159 vrf mgt retransmit 1 key 7 <removed>
-radius-server host 10.10.11.160 vrf mgt timeout 1 key 7 <removed>
-radius-server host 10.10.11.248 vrf mgt key 7 <removed>
+radius-server host 10.10.11.160 vrf mgt timeout 1 key 8a <removed>
+radius-server host 10.10.11.248 vrf mgt key 0 <removed>
 radius-server host 10.10.11.155 vrf mgt tls ssl-profile HOST_SSL_PROFILE port 2083 timeout 1 retransmit 1
 radius-server host 10.10.11.158 vrf mgt tls ssl-profile SSL_PROFILE
 ```
@@ -1646,23 +1672,25 @@ ip radius vrf abc source-interface Loopback10
 
 #### AAA Server Groups Summary
 
-| Server Group Name | Type | VRF | IP address |
-| ----------------- | ---- | --- | ---------- |
-| TACACS | tacacs+ | mgt | 10.10.11.157 |
-| TACACS | tacacs+ | default | 10.10.11.249 |
-| TACACS1 | tacacs+ | mgt | 10.10.10.157 |
-| TACACS1 | tacacs+ | default | 10.10.10.249 |
-| TACACS2 | tacacs+ | mgt | 192.168.10.157 |
-| TACACS2 | tacacs+ | default | 10.10.10.248 |
-| LDAP1 | ldap | mgt | 192.168.10.157 |
-| LDAP1 | ldap | default | 10.10.10.248 |
-| LADP2 | ldap | mgt | 10.10.10.157 |
-| LADP2 | ldap | default | 10.10.10.249 |
-| RADIUS1 | radius | mgt | 192.168.10.157 |
-| RADIUS1 | radius | default | 10.10.10.248 |
-| RADIUS2 | radius | mgt | 10.10.10.157 |
-| RADIUS2 | radius | default | 10.10.10.249 |
-| RADIUS3 | radius | - | - |
+| Server Group Name | Type | VRF | IP address | TLS Enabled | TLS Port |
+| ----------------- | ---- | --- | ---------- | ----------- | -------- |
+| TACACS | tacacs+ | mgt | 10.10.11.157 | - | - |
+| TACACS | tacacs+ | default | 10.10.11.249 | - | - |
+| TACACS1 | tacacs+ | mgt | 10.10.10.157 | - | - |
+| TACACS1 | tacacs+ | default | 10.10.10.249 | - | - |
+| TACACS2 | tacacs+ | mgt | 192.168.10.157 | - | - |
+| TACACS2 | tacacs+ | default | 10.10.10.248 | - | - |
+| LDAP1 | ldap | mgt | 192.168.10.157 | - | - |
+| LDAP1 | ldap | default | 10.10.10.248 | - | - |
+| LADP2 | ldap | mgt | 10.10.10.157 | - | - |
+| LADP2 | ldap | default | 10.10.10.249 | - | - |
+| RADIUS1 | radius | mgt | 192.168.10.157 | - | - |
+| RADIUS1 | radius | default | 10.10.10.248 | - | - |
+| RADIUS1 | radius | mgt | 11.11.11.123 | True | 2086 |
+| RADIUS2 | radius | mgt | 10.10.10.157 | - | - |
+| RADIUS2 | radius | default | 10.10.10.249 | - | - |
+| RADIUS2 | radius | default | 12.12.12.145 | True | - |
+| RADIUS3 | radius | - | - | - | - |
 
 #### AAA Server Groups Device Configuration
 
@@ -1679,10 +1707,12 @@ aaa group server ldap LDAP1
 aaa group server radius RADIUS1
    server 192.168.10.157 vrf mgt
    server 10.10.10.248
+   server 11.11.11.123 vrf mgt tls port 2086
 !
 aaa group server radius RADIUS2
    server 10.10.10.157 vrf mgt
    server 10.10.10.249
+   server 12.12.12.145 tls
 !
 aaa group server radius RADIUS3
 !
@@ -1868,6 +1898,86 @@ address locking
 | Signature verification | Enabled |
 | Signature verification SSL profile | cipher-v1.0-v1.3 |
 
+### Management Security Auto-Certificate Profiles
+
+| Profile | Key | EST Protocol Profile | Digest | Renewal (seconds) |
+| ------- | --- | -------------------- | ------ | ----------------- |
+| AVD_AUTO_CERTIFICATE_PROFILE | SSL_KEY | AVD_EST_PROTOCOL_token | sha512 | - |
+| AVD_AUTO_CERTIFICATE_PROFILE_system | SSL_KEY | AVD_EST_PROTOCOL_secret | - | 86400 |
+
+#### Auto-Certificate Profile AVD_AUTO_CERTIFICATE_PROFILE Parameters
+
+##### Distinguished Name
+
+| Field | Value |
+| ----- | ----- |
+| Common Name | 00:1c:73:ff:ff:ff |
+| Country | US |
+| Email | noreply@arista.com |
+| Locality | Santa Clara |
+| Organization | Arista Networks |
+| Organization Unit | AVD |
+| Serial Number | 123abc |
+| State | CA |
+
+##### Subject Alternative Name
+
+| Field | Value |
+| ----- | ----- |
+| DNS | avd.arista.com, bbb.arista.com |
+| Email | noreply@arista.com, support@arista.com |
+| IP | 198.51.100.42, 198.51.100.43 |
+| URI | https://avd.arista.com/, https://bbb.arista.com/ |
+
+#### Auto-Certificate Profile AVD_AUTO_CERTIFICATE_PROFILE_system Parameters
+
+##### Distinguished Name
+
+| Field | Value |
+| ----- | ----- |
+| Common Name | 00:1c:73:aa:aa:aa |
+| Country | US |
+| Email | noreply@arista.com |
+| Locality | Santa Clara |
+| Organization | Arista Networks |
+| Organization Unit | AVD |
+| Serial Number | system |
+| State | CA |
+
+### Management Security Auto-Certificate Protocols
+
+| Profile | Protocol | Disabled | Server URL | SSL Profile Name | VRF | Retry Count | Retry Interval (seconds) | Exponential Backoff |
+| ------- | -------- | -------- | ---------- | ---------------- | --- | ----------- | ------------------------ | ------------------- |
+| AVD_EST_PROTOCOL_both | EST | True | https://test_est.example.com/test2 | SSL_PROFILE | MGMT | 100 | 30 | False |
+| AVD_EST_PROTOCOL_non_user | EST | - | - | - | - | - | - | - |
+| AVD_EST_PROTOCOL_secret | EST | - | https://test_est.example.com/test1 | SSL_PROFILE | - | 100 | - | - |
+| AVD_EST_PROTOCOL_token | EST | - | https://test_est.example.com/test | SSL_PROFILE | MGMT | 100 | 30 | True |
+
+#### Auto-Certificate Protocol AVD_EST_PROTOCOL_both Credentials
+
+| Operation | Method | Username | Encoding |
+| --------- | ------ | -------- | -------- |
+| Enroll | Token | - | 0 |
+
+#### Auto-Certificate Protocol AVD_EST_PROTOCOL_non_user Credentials
+
+| Operation | Method | Username | Encoding |
+| --------- | ------ | -------- | -------- |
+
+#### Auto-Certificate Protocol AVD_EST_PROTOCOL_secret Credentials
+
+| Operation | Method | Username | Encoding |
+| --------- | ------ | -------- | -------- |
+| Enroll | Username/Secret | est_authentication | 7 |
+| Re-Enroll | Username/Secret | est_authentication | 0 |
+
+#### Auto-Certificate Protocol AVD_EST_PROTOCOL_token Credentials
+
+| Operation | Method | Username | Encoding |
+| --------- | ------ | -------- | -------- |
+| Enroll | Token | - | 7 |
+| Re-Enroll | Token | - | 7 |
+
 ### Management Security SSL Profiles
 
 | SSL Profile Name | TLS protocol accepted | Certificate filename | Key filename | Ciphers | CRLs | FIPS restrictions enabled |
@@ -1939,6 +2049,65 @@ address locking
 ```eos
 !
 management security
+   auto-certificate profile AVD_AUTO_CERTIFICATE_PROFILE
+      key SSL_KEY
+      parameters distinguished-name common-name "00:1c:73:ff:ff:ff"
+      parameters distinguished-name country US
+      parameters distinguished-name state "CA"
+      parameters distinguished-name locality "Santa Clara"
+      parameters distinguished-name organization "Arista Networks"
+      parameters distinguished-name organization-unit "AVD"
+      parameters distinguished-name email noreply@arista.com
+      parameters distinguished-name serial-number "123abc"
+      parameters subject-alternative-name ip 198.51.100.42 198.51.100.43
+      parameters subject-alternative-name dns avd.arista.com bbb.arista.com
+      parameters subject-alternative-name email noreply@arista.com support@arista.com
+      parameters subject-alternative-name uri https://avd.arista.com/ https://bbb.arista.com/
+      protocol instance AVD_EST_PROTOCOL_token
+      digest sha512
+   !
+   auto-certificate profile AVD_AUTO_CERTIFICATE_PROFILE_system
+      key SSL_KEY
+      parameters distinguished-name common-name "00:1c:73:aa:aa:aa"
+      parameters distinguished-name country US
+      parameters distinguished-name state "CA"
+      parameters distinguished-name locality "Santa Clara"
+      parameters distinguished-name organization "Arista Networks"
+      parameters distinguished-name organization-unit "AVD"
+      parameters distinguished-name email noreply@arista.com
+      parameters distinguished-name serial-number system
+      protocol instance AVD_EST_PROTOCOL_secret
+      renewal 86400 seconds
+   !
+   auto-certificate protocol est AVD_EST_PROTOCOL_both
+      server url https://test_est.example.com/test2
+      server ssl profile SSL_PROFILE
+      server vrf MGMT
+      connection retry interval 30 seconds
+      connection retry count 100
+      disabled
+      credentials enroll token 0 <removed>
+   !
+   auto-certificate protocol est AVD_EST_PROTOCOL_non_user
+      credentials enroll secret 7 <removed>
+      credentials re-enroll secret 0 <removed>
+   !
+   auto-certificate protocol est AVD_EST_PROTOCOL_secret
+      server url https://test_est.example.com/test1
+      server ssl profile SSL_PROFILE
+      connection retry count 100
+      credentials enroll username est_authentication secret 7 <removed>
+      credentials re-enroll username est_authentication secret 0 <removed>
+   !
+   auto-certificate protocol est AVD_EST_PROTOCOL_token
+      server url https://test_est.example.com/test
+      server ssl profile SSL_PROFILE
+      server vrf MGMT
+      connection retry interval 30 seconds backoff exponential
+      connection retry count 100
+      credentials enroll token 7 <removed>
+      credentials re-enroll token 7 <removed>
+   !
    entropy source hardware haveged cpu jitter
    entropy source hardware exclusive
    password minimum length 17
@@ -2029,6 +2198,7 @@ alias siib show ip interface brief
 
 - DHCP Relay is disabled for tunnelled requests
 - DHCP Relay is disabled for MLAG peer-link requests
+- Client requests flooding suppression for VLANs: 500-510,1000,2000,3000
 
 | DHCP Relay Servers |
 | ------------------ |
@@ -2042,6 +2212,7 @@ alias siib show ip interface brief
 dhcp relay
    tunnel requests disabled
    mlag peer-link requests disabled
+   client requests flooding suppression vlan 500-510,1000,2000,3000
    server dhcp-relay-server1
    server dhcp-relay-server2
 ```
@@ -5083,6 +5254,7 @@ interface Ethernet3
    ptp sync-message interval 1
    ptp transport layer2
    ptp vlan 2
+   ptp region domain-number 25
    no priority-flow-control
    spanning-tree guard root
    spanning-tree bpduguard rate-limit disable
@@ -5210,6 +5382,7 @@ interface Ethernet7
    ptp sync-message interval 5
    ptp transport layer2
    ptp vlan all
+   ptp region domain-number 56
    service-profile QoS
    qos trust cos
    qos cos 5
@@ -6346,6 +6519,7 @@ interface Port-Channel5
    ptp sync-message interval 1
    ptp transport layer2
    ptp vlan 2
+   ptp region domain-number 25
    storm-control broadcast level 1
    storm-control multicast level 1
    storm-control unknown-unicast level 1
@@ -8829,6 +9003,7 @@ ipv6 router ospf 401 vrf TENANT_A_PROJECT02
 | Settings | Value |
 | -------- | ----- |
 | IPv6 Address-family Enabled | True |
+| Multi-topology Enabled | True |
 | TI-LFA Mode | node-protection |
 | TI-LFA Level | level-1 |
 | TI-LFA SRLG Enabled | True |
@@ -8883,6 +9058,7 @@ router isis EVPN_UNDERLAY
       fast-reroute ti-lfa srlg strict
    !
    address-family ipv6 unicast
+      multi-topology
       fast-reroute ti-lfa mode node-protection level-1
       fast-reroute ti-lfa srlg strict
    !
@@ -8890,8 +9066,6 @@ router isis EVPN_UNDERLAY
       no shutdown
       prefix-segment 155.2.1.1/32 index 211
       prefix-segment 2001:cafe:155::/64 index 6211
-   address-family ipv6 unicast
-     multi-topology
    traffic-engineering
      no shutdown
      is-type level-2
@@ -9442,6 +9616,8 @@ ASN Notation: asdot
 | Role(s) | producer<br>consumer<br>propagator |
 
 #### Router BGP VPN-IPv4 Address Family
+
+- Next-hop resolution is **disabled**
 
 - VPN import pruning is **enabled**
 
@@ -10213,6 +10389,12 @@ router bgp 65101
       neighbor baz default-originate route-map RM-FOO always
       neighbor baz additional-paths send ecmp limit 20
       no neighbor FOOBAR activate
+      neighbor FOOBAR1 activate
+      neighbor FOOBAR1 default-originate
+      neighbor FOOBAR2 activate
+      neighbor FOOBAR2 default-originate route-map RM-FOO
+      neighbor FOOBAR3 activate
+      neighbor FOOBAR3 default-originate always
       neighbor IPV6-UNDERLAY activate
       neighbor IPV6-UNDERLAY route-map RM-HIDE-AS-PATH in
       neighbor IPV6-UNDERLAY route-map RM-HIDE-AS-PATH out
@@ -10229,15 +10411,19 @@ router bgp 65101
       neighbor 2001:db8::1 route-map Address_Family_IPV6_Out out
       neighbor 2001:db8::1 prefix-list PL-FOO-v6-IN in
       neighbor 2001:db8::1 prefix-list PL-FOO-v6-OUT out
+      neighbor 2001:db8::1 default-originate route-map RM-FOO-MATCH3 always
       neighbor 2001:db8::1 additional-paths send ecmp limit 20
       neighbor 2001:db8::1 peer-tag in PEER_TAG_IN_IPV6
       neighbor 2001:db8::1 peer-tag out discard PEER_TAG_DISCARD_OUT_IPV6
       neighbor 2001:db8::2 activate
       neighbor 2001:db8::2 rcf in Address_Family_IPV6_In()
       neighbor 2001:db8::2 rcf out Address_Family_IPV6_Out()
+      neighbor 2001:db8::2 default-originate always
       neighbor 2001:db8::2 additional-paths send any
       no neighbor 2001:db8::21 activate
+      neighbor 2001:db8::21 default-originate
       no neighbor 2001:db8::21 additional-paths send
+      neighbor 2001:db8::22 default-originate route-map RM-FOO-MATCH3
       neighbor 2001:db8::22 additional-paths send limit 5
       network 2001:db8:100::/40
       network 2001:db8:200::/40 route-map RM-BAR-MATCH
@@ -10364,6 +10550,7 @@ router bgp 65101
       neighbor 192.168.255.5 default-route rcf Address_Family_VPN_IPV4_In()
       neighbor default encapsulation mpls next-hop-self source-interface Loopback0
       domain identifier 65000:0
+      next-hop resolution disabled
       route import match-failure action discard
    !
    address-family vpn-ipv6
@@ -10912,6 +11099,19 @@ monitor loop-protection
 | Tunnel Termination Model | TTL: uniform, DSCP: uniform |
 | Tunnel Termination PHP Model | TTL: pipe, DSCP: pipe |
 
+### MPLS Label Ranges
+
+| Range | Base | Size |
+| ----- | ---- | ---- |
+| BGP-SR | 900000 | 65536 |
+| Dynamic | 16000 | 131072 |
+| IS-IS SR | 900000 | 65536 |
+| L2 EVPN | 1036288 | 12288 |
+| L2 EVPN Ethernet Segment | 1031072 | 1024 |
+| OSPF-SR | 900000 | 1000 |
+| SRLB | 965536 | 65536 |
+| Static | 16 | 1 |
+
 ### MPLS Interfaces
 
 | Interface | MPLS IP Enabled | LDP Enabled | IGP Sync |
@@ -10986,6 +11186,15 @@ mpls ldp
    no shutdown
 !
 mpls icmp fragmentation-needed tunneling
+!
+mpls label range bgp-sr 900000 65536
+mpls label range dynamic 16000 131072
+mpls label range isis-sr 900000 65536
+mpls label range l2evpn 1036288 12288
+mpls label range l2evpn ethernet-segment 1031072 1024
+mpls label range ospf-sr 900000 1000
+mpls label range srlb 965536 65536
+mpls label range static 16 1
 !
 mpls rsvp
    refresh interval 3
@@ -12094,6 +12303,7 @@ ip access-list ACL_NO_SEQUENCE
    permit ip any any tracked dscp ef
    permit ip any any nexthop-group NH_TEST
    permit vlan inner 123 0x000 ip any any
+   permit vlan 235 0x1FF inner 124 0x001 tcp any any
    permit vlan 234 0xFFF ip any any
    permit icmp any any
 !
@@ -13627,6 +13837,15 @@ mac security
 
 ### Traffic Policies information
 
+#### Traffic Policies VRF Interfaces
+
+| VRF | CPU Traffic Policy | Management Ports | Physical Interfaces Traffic Policy |
+| --- | ------------------ | ---------------- | ---------------------------------- |
+| VRF1 | TP1 | True | TP1 |
+| VRF2 | TP2 | - | TP2 |
+| VRF3 | TP3 | - | - |
+| VRF4 | - | - | TP4 |
+
 #### IPv4 Field Sets
 
 | Field Set Name | IPv4 Prefixes | Excluded Prefixes |
@@ -13708,6 +13927,21 @@ Counters: test
 ```eos
 !
 traffic-policies
+   vrf VRF1
+      cpu traffic-policy TP1 fallback traffic-policy none
+         enforcement management
+      traffic-policy input TP1 physical
+   !
+   vrf VRF2
+      cpu traffic-policy TP2 fallback traffic-policy none
+      traffic-policy input TP2 physical
+   !
+   vrf VRF3
+      cpu traffic-policy TP3 fallback traffic-policy none
+   !
+   vrf VRF4
+      traffic-policy input TP4 physical
+   !
    field-set l4-port SERVICE-DEMO
       10,20,80,440-450
    !

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2026 Arista Networks, Inc.
+# Copyright (c) 2026 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """
@@ -13,12 +13,14 @@ import ipaddress
 from typing import TYPE_CHECKING
 
 from pyavd._eos_cli_config_gen.schema import EosCliConfigGen
+from pyavd._eos_designs.schema import EosDesigns
 from pyavd._eos_designs.structured_config.parent_interfaces import ParentInterfacesTracker
-from pyavd._utils import as_path_list_match_from_bgp_asns
+from pyavd._errors import AristaAvdInvalidInputsError
+from pyavd._utils import Undefined, UndefinedType, as_path_list_match_from_bgp_asns
+from pyavd._utils.format_string import AvdStringFormatter
 from pyavd._utils.run_once import RunOnceMethodStateHelper, run_once_method
 
 if TYPE_CHECKING:
-    from pyavd._eos_designs.schema import EosDesigns
     from pyavd._eos_designs.shared_utils import SharedUtilsProtocol
     from pyavd._eos_designs.structured_config.structured_config_generator import StructCfgs
 
@@ -36,6 +38,7 @@ class StructuredConfigUtils(RunOnceMethodStateHelper):
         """Initialize the StructuredConfigUtils with a ParentInterfacesTracker instance and structured config instance."""
         super().__init__()
         self.structured_config = structured_config
+        self.custom_structured_configs = custom_structured_configs
         self.inputs = inputs
         """The shared structured config instance to write config into."""
         self.shared_utils = shared_utils
@@ -157,6 +160,158 @@ class StructuredConfigUtils(RunOnceMethodStateHelper):
         ip_extcommunity_list = EosCliConfigGen.IpExtcommunityListsItem(name="ECL-EVPN-SOO")
         ip_extcommunity_list.entries.append_new(type="permit", extcommunities=f"soo {self.shared_utils.evpn_soo}")
         self.structured_config.ip_extcommunity_lists.append(ip_extcommunity_list)
+
+    @run_once_method
+    def set_once_route_map_mlag_peer_in(self: StructuredConfigUtils) -> None:
+        """
+        Set route-map RM-MLAG-PEER-IN.
+
+        Makes routes learned over the MLAG Peer-link less preferred on spines
+        to ensure optimal routing by setting origin to incomplete.
+        """
+        route_map = EosCliConfigGen.RouteMapsItem(name="RM-MLAG-PEER-IN")
+        route_map.sequence_numbers.append_new(
+            sequence=10,
+            type="permit",
+            description="Make routes learned over MLAG Peer-link less preferred on spines to ensure optimal routing",
+            set=EosCliConfigGen.RouteMapsItem.SequenceNumbersItem.Set(["origin incomplete"]),
+        )
+        self.structured_config.route_maps.append(route_map)
+
+    @run_once_method
+    def set_once_peer_group_mlag_ipv4_underlay_peer(self: StructuredConfigUtils) -> None:
+        """
+        Set router_bgp structured_config covering the MLAG peer_group and associated address_family activations.
+
+        This is called from:
+        - MLAG in the case of BGP underlay routing protocol.
+        - Network services in the case of iBGP MLAG peering for VRFs
+
+        """
+        bgp_peer_group = self.inputs.bgp_peer_groups.mlag_ipv4_underlay_peer
+        self.set_mlag_peer_group(bgp_peer_group)
+        if not self.shared_utils.underlay_ipv6_numbered:
+            address_family_ipv4_peer_groups = self.structured_config.router_bgp.address_family_ipv4.peer_groups.append_new(
+                name=bgp_peer_group.name, activate=True
+            )
+            if self.inputs.underlay_rfc5549:
+                address_family_ipv4_peer_groups.next_hop.address_family_ipv6._update(enabled=True, originate=True)
+        if self.shared_utils.underlay_ipv6:
+            self.structured_config.router_bgp.address_family_ipv6.peer_groups.append_new(name=bgp_peer_group.name, activate=True)
+
+    @run_once_method
+    def set_once_peer_group_mlag_ipv4_vrfs_peer(self: StructuredConfigUtils) -> None:
+        """Set router_bgp structured_config covering the MLAG peer_group(s) in case there are VRFs with iBGP peerings using a separate peer-group."""
+        bgp_peer_group = self.inputs.bgp_peer_groups.mlag_ipv4_vrfs_peer
+        self.set_mlag_peer_group(bgp_peer_group)
+        address_family_ipv4_peer_groups = self.structured_config.router_bgp.address_family_ipv4.peer_groups.append_new(name=bgp_peer_group.name, activate=True)
+        if self.inputs.overlay_mlag_rfc5549:
+            address_family_ipv4_peer_groups.next_hop.address_family_ipv6._update(enabled=True, originate=True)
+
+    def set_mlag_peer_group(
+        self: StructuredConfigUtils, bgp_peer_group: EosDesigns.BgpPeerGroups.MlagIpv4UnderlayPeer | EosDesigns.BgpPeerGroups.MlagIpv4VrfsPeer
+    ) -> None:
+        """Set structured_config for one MLAG peer_group."""
+        router_bgp = self.structured_config.router_bgp
+        peer_group_name = bgp_peer_group.name
+        peer_group = EosCliConfigGen.RouterBgp.PeerGroupsItem(
+            name=peer_group_name,
+            remote_as=self.shared_utils.formatted_bgp_as,
+            next_hop_self=True,
+            description=AvdStringFormatter().format(self.inputs.mlag_bgp_peer_group_description, mlag_peer=self.shared_utils.mlag_peer),
+            password=self.shared_utils.get_bgp_password(bgp_peer_group),
+            bfd=bgp_peer_group.bfd or None,
+            maximum_routes=bgp_peer_group.maximum_routes,
+            send_community="all",
+        )
+        peer_group.metadata.type = "ipv4"
+
+        if bgp_peer_group.structured_config:
+            self.custom_structured_configs.nested.router_bgp.peer_groups.obtain(peer_group_name)._deepmerge(
+                bgp_peer_group.structured_config, list_merge=self.custom_structured_configs.list_merge_strategy
+            )
+
+        if self.shared_utils.node_config.mlag_ibgp_origin_incomplete:
+            peer_group.route_map_in = "RM-MLAG-PEER-IN"
+            self.set_once_route_map_mlag_peer_in()
+
+        router_bgp.peer_groups.append(peer_group)
+
+    @run_once_method
+    def set_once_sflow(self) -> None:
+        """Structured config for sFlow based on sflow_settings."""
+        sflow_settings = self.inputs.sflow_settings
+        destinations = sflow_settings.destinations._natural_sorted(sort_key="destination")
+        if sflow_settings.export_to_cloudvision.enabled:
+            destinations.append(EosDesigns.SflowSettings.DestinationsItem(destination="127.0.0.1", port=6343, vrf=sflow_settings.export_to_cloudvision.vrf))
+
+        if not destinations:
+            msg = "Either `sflow_settings.destinations` or `sflow_settings.export_to_cloudvision.enabled: true` is required to configure `sflow`."
+            raise AristaAvdInvalidInputsError(msg)
+
+        # At this point we have at least one interface with sFlow enabled
+        # and at least one destination.
+        self.structured_config.sflow._update(run=True, polling_interval=sflow_settings.polling_interval, sample=sflow_settings.sample.rate)
+
+        for destination in destinations:
+            destination: EosDesigns.SflowSettings.DestinationsItem
+            sflow_vrf, source_interface = self.shared_utils.get_vrf_and_source_interface(
+                vrf_input=destination.vrf,
+                vrfs=sflow_settings.vrfs,
+                set_source_interfaces=True,
+                context=f"sflow_settings.destinations[destination={destination.destination}].vrf",
+            )
+            if sflow_vrf == "default":
+                # Add destination without VRF field
+                self.structured_config.sflow.destinations.append_new(destination=destination.destination, port=destination.port)
+                self.structured_config.sflow.source_interface = source_interface
+            else:
+                # Add destination with VRF field.
+                vrf_item = self.structured_config.sflow.vrfs.obtain(sflow_vrf)
+                vrf_item.destinations.append_new(destination=destination.destination, port=destination.port)
+                vrf_item.source_interface = source_interface
+                self.structured_config.sflow.vrfs.append(vrf_item)
+
+    def get_interface_sflow(self: StructuredConfigUtils, interface: str, configured_sflow: bool | None) -> bool | None:
+        """
+        Get the configured sFlow state if the interface supports it based on platform settings.
+
+        Considers global sFlow support and specific support for subinterfaces.
+
+        Also calls set_once_sflow if configured_sflow is True or not None.
+
+        Returns:
+            The configured_sflow value if supported, otherwise None.
+        """
+        if self.shared_utils.platform_settings.feature_support.sflow and (
+            "." not in interface or self.shared_utils.platform_settings.feature_support.sflow_subinterfaces
+        ):
+            if configured_sflow:
+                self.set_once_sflow()
+            return configured_sflow
+        return None
+
+    def get_interface_validate_state(self, user_input: bool | None = None, peer_in_fabric: bool = False) -> bool | UndefinedType:
+        """
+        Checks if validate_state flag should be set or not.
+
+        Args:
+            user_input: Boolean value of the `validate_state` from the inputs of the interface. `None` if not set in inputs.
+            peer_in_fabric: Flag indicating if the interface peer is a known AVD fabric device.
+
+        Returns:
+            True: If `validate_state` should be enabled (set to True) for the interface.
+            False: If `validate_state` should be disabled (set to False) for the interface.
+            UndefinedType: If `validate_state` should not be set/changed for the interface.
+        """
+        if self.shared_utils.digital_twin:
+            # Peer is not deployed in Digital Twin - interface will be down, so disable state validation.
+            if not peer_in_fabric:
+                return False
+            # Peer is in the fabric - only respect an explicit False from user input; never force True in Digital Twin.
+            return False if user_input is False else Undefined
+        # Non-Digital-Twin: follow the user input if set, otherwise leave unset.
+        return Undefined if user_input is None else user_input
 
 
 __all__ = ["StructuredConfigUtils"]
